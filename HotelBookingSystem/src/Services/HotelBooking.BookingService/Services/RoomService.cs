@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using HotelBooking.Models.DTOs;
+using HotelBooking.Models.Entities;
 using HotelBooking.Data.Repositories;
 
 namespace HotelBooking.BookingService.Services
@@ -18,59 +20,106 @@ namespace HotelBooking.BookingService.Services
         public async Task<IEnumerable<RoomDto>> GetAllRoomsAsync()
         {
             var rooms = await _roomRepository.GetAllAsync();
-            return MapToRoomDto(rooms);
+            return rooms.Select(MapToRoomDto);
         }
 
-        public async Task<RoomDto> GetRoomByIdAsync(Guid roomId)
+        public async Task<IEnumerable<RoomDto>> GetActiveRoomsAsync()
+        {
+            var rooms = await _roomRepository.GetActiveRoomsAsync();
+            return rooms.Select(MapToRoomDto);
+        }
+
+        public async Task<IEnumerable<RoomDto>> GetRoomsByTypeAsync(string roomType)
+        {
+            var rooms = await _roomRepository.GetRoomsByTypeAsync(roomType);
+            return rooms.Select(MapToRoomDto);
+        }
+
+        public async Task<RoomDto?> GetRoomByIdAsync(Guid roomId)
         {
             var room = await _roomRepository.GetByIdAsync(roomId);
-            return MapToRoomDto(room);
+            return room == null ? null : MapToRoomDto(room);
         }
 
-        public async Task<RoomDto> CreateRoomAsync(RoomDto roomDto)
+        public async Task<IEnumerable<AvailableRoomDto>> GetAvailableRoomsAsync(DateTime checkInDate, DateTime checkOutDate, int guests)
         {
-            var room = MapToRoomEntity(roomDto);
-            var createdRoom = await _roomRepository.AddAsync(room);
-            return MapToRoomDto(createdRoom);
-        }
-
-        public async Task<RoomDto> UpdateRoomAsync(Guid roomId, RoomDto roomDto)
-        {
-            var room = MapToRoomEntity(roomDto);
-            room.Id = roomId;
-            var updatedRoom = await _roomRepository.UpdateAsync(room);
-            return MapToRoomDto(updatedRoom);
-        }
-
-        public async Task DeleteRoomAsync(Guid roomId)
-        {
-            await _roomRepository.DeleteAsync(roomId);
-        }
-
-        private RoomDto MapToRoomDto(Room room)
-        {
-            return new RoomDto
+            var rooms = await _roomRepository.GetAvailableRoomsAsync(checkInDate, checkOutDate, guests);
+            var numberOfNights = (checkOutDate - checkInDate).Days;
+            
+            return rooms.Select(room => new AvailableRoomDto
             {
-                Id = room.Id,
+                RoomId = room.RoomId,
                 RoomNumber = room.RoomNumber,
                 RoomType = room.RoomType,
                 MaxOccupancy = room.MaxOccupancy,
                 PricePerNight = room.PricePerNight,
                 Description = room.Description,
-                Amenities = room.Amenities
-            };
+                Amenities = room.Amenities,
+                NumberOfNights = numberOfNights,
+                TotalPrice = room.PricePerNight * numberOfNights
+            });
         }
 
-        private Room MapToRoomEntity(RoomDto roomDto)
+        public async Task<RoomDto> CreateRoomAsync(CreateRoomDto createRoomDto)
         {
-            return new Room
+            var room = new Room
             {
-                RoomNumber = roomDto.RoomNumber,
-                RoomType = roomDto.RoomType,
-                MaxOccupancy = roomDto.MaxOccupancy,
-                PricePerNight = roomDto.PricePerNight,
-                Description = roomDto.Description,
-                Amenities = roomDto.Amenities
+                RoomNumber = createRoomDto.RoomNumber,
+                RoomType = createRoomDto.RoomType,
+                MaxOccupancy = createRoomDto.MaxOccupancy,
+                PricePerNight = createRoomDto.PricePerNight,
+                Description = createRoomDto.Description,
+                Amenities = createRoomDto.Amenities,
+                IsActive = createRoomDto.IsActive
+            };
+
+            var createdRoom = await _roomRepository.AddAsync(room);
+            return MapToRoomDto(createdRoom);
+        }
+
+        public async Task<RoomDto?> UpdateRoomAsync(Guid roomId, CreateRoomDto updateRoomDto)
+        {
+            var existingRoom = await _roomRepository.GetByIdAsync(roomId);
+            if (existingRoom == null)
+                return null;
+
+            existingRoom.RoomNumber = updateRoomDto.RoomNumber;
+            existingRoom.RoomType = updateRoomDto.RoomType;
+            existingRoom.MaxOccupancy = updateRoomDto.MaxOccupancy;
+            existingRoom.PricePerNight = updateRoomDto.PricePerNight;
+            existingRoom.Description = updateRoomDto.Description;
+            existingRoom.Amenities = updateRoomDto.Amenities;
+            existingRoom.IsActive = updateRoomDto.IsActive;
+            existingRoom.UpdatedAt = DateTime.UtcNow;
+
+            var updatedRoom = await _roomRepository.UpdateAsync(existingRoom);
+            return MapToRoomDto(updatedRoom);
+        }
+
+        public async Task<bool> DeleteRoomAsync(Guid roomId)
+        {
+            return await _roomRepository.DeleteAsync(roomId);
+        }
+
+        public async Task<bool> IsRoomAvailableAsync(Guid roomId, DateTime checkInDate, DateTime checkOutDate)
+        {
+            return await _roomRepository.IsRoomAvailableAsync(roomId, checkInDate, checkOutDate);
+        }
+
+        private static RoomDto MapToRoomDto(Room room)
+        {
+            return new RoomDto
+            {
+                RoomId = room.RoomId,
+                RoomNumber = room.RoomNumber,
+                RoomType = room.RoomType,
+                MaxOccupancy = room.MaxOccupancy,
+                PricePerNight = room.PricePerNight,
+                Description = room.Description,
+                Amenities = room.Amenities,
+                IsActive = room.IsActive,
+                CreatedAt = room.CreatedAt,
+                UpdatedAt = room.UpdatedAt
             };
         }
     }

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace HotelBooking.Models.Entities
+namespace HotelBooking.Models.DTOs
 {
-    public class Customer
+    public class CustomerDto
     {
         public Guid CustomerId { get; set; }
         public string? GoogleId { get; set; }
@@ -14,15 +14,5 @@ namespace HotelBooking.Models.Entities
         public string? Address { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-
-        // Navigation properties
-        public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
-
-        public Customer()
-        {
-            CustomerId = Guid.NewGuid();
-            CreatedAt = DateTime.UtcNow;
-            UpdatedAt = DateTime.UtcNow;
-        }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace HotelBooking.Models.Entities
 {
@@ -14,5 +15,8 @@ namespace HotelBooking.Models.Entities
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+        // Navigation properties
+        public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
     }
 }

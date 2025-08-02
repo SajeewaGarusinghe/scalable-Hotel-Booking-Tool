@@ -44,7 +44,9 @@ namespace HotelBooking.Data.Configurations
 
             builder.Property(b => b.BookingReference)
                 .HasMaxLength(20)
-                .IsRequired()
+                .IsRequired();
+            
+            builder.HasIndex(b => b.BookingReference)
                 .IsUnique();
 
             builder.Property(b => b.CreatedAt)
@@ -52,6 +54,22 @@ namespace HotelBooking.Data.Configurations
 
             builder.Property(b => b.UpdatedAt)
                 .HasDefaultValueSql("GETUTCDATE()");
+
+            // Relationships
+            builder.HasOne(b => b.Customer)
+                .WithMany(c => c.Bookings)
+                .HasForeignKey(b => b.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(b => b.Room)
+                .WithMany(r => r.Bookings)
+                .HasForeignKey(b => b.RoomId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(b => b.SpecialRequests)
+                .WithOne(sr => sr.Booking)
+                .HasForeignKey(sr => sr.BookingId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

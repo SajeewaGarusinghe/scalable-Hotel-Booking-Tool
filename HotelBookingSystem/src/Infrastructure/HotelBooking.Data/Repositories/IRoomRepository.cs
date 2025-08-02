@@ -1,12 +1,16 @@
+using HotelBooking.Models.Entities;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
 namespace HotelBooking.Data.Repositories
 {
-    public interface IRoomRepository
+    public interface IRoomRepository : IGenericRepository<Room>
     {
-        Task<Room> GetRoomByIdAsync(Guid roomId);
-        Task<IEnumerable<Room>> GetAllRoomsAsync();
         Task<IEnumerable<Room>> GetAvailableRoomsAsync(DateTime checkInDate, DateTime checkOutDate, int guests);
-        Task AddRoomAsync(Room room);
-        Task UpdateRoomAsync(Room room);
-        Task DeleteRoomAsync(Guid roomId);
+        Task<IEnumerable<Room>> GetRoomsByTypeAsync(string roomType);
+        Task<Room?> GetRoomByNumberAsync(string roomNumber);
+        Task<IEnumerable<Room>> GetActiveRoomsAsync();
+        Task<bool> IsRoomAvailableAsync(Guid roomId, DateTime checkInDate, DateTime checkOutDate);
     }
 }

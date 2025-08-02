@@ -1,52 +1,66 @@
+using Microsoft.EntityFrameworkCore;
+using HotelBooking.Data.Context;
+using HotelBooking.Models.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using HotelBooking.Models.Entities;
-using HotelBooking.Data.Context;
-using Microsoft.EntityFrameworkCore;
 
 namespace HotelBooking.Data.Repositories
 {
-    public class RoomRepository : IRoomRepository
+    public class RoomRepository : GenericRepository<Room>, IRoomRepository
     {
-        private readonly HotelBookingContext _context;
-
-        public RoomRepository(HotelBookingContext context)
+        public RoomRepository(HotelBookingContext context) : base(context)
         {
-            _context = context;
         }
 
-        public async Task<IEnumerable<Room>> GetAllRoomsAsync()
+        public async Task<IEnumerable<Room>> GetAvailableRoomsAsync(DateTime checkInDate, DateTime checkOutDate, int guests)
         {
-            return await _context.Rooms.ToListAsync();
+            return await _dbSet
+                .Where(r => r.IsActive && 
+                           r.MaxOccupancy >= guests &&
+                           !r.Bookings.Any(b => 
+                               b.BookingStatus != "Cancelled" &&
+                               ((b.CheckInDate <= checkInDate && b.CheckOutDate > checkInDate) ||
+                                (b.CheckInDate < checkOutDate && b.CheckOutDate >= checkOutDate) ||
+                                (b.CheckInDate >= checkInDate && b.CheckOutDate <= checkOutDate))))
+                .ToListAsync();
         }
 
-        public async Task<Room> GetRoomByIdAsync(Guid roomId)
+        public async Task<IEnumerable<Room>> GetRoomsByTypeAsync(string roomType)
         {
-            return await _context.Rooms.FindAsync(roomId);
+            return await _dbSet
+                .Where(r => r.RoomType == roomType && r.IsActive)
+                .ToListAsync();
         }
 
-        public async Task AddRoomAsync(Room room)
+        public async Task<Room?> GetRoomByNumberAsync(string roomNumber)
         {
-            await _context.Rooms.AddAsync(room);
-            await _context.SaveChangesAsync();
+            return await _dbSet
+                .FirstOrDefaultAsync(r => r.RoomNumber == roomNumber);
         }
 
-        public async Task UpdateRoomAsync(Room room)
+        public async Task<IEnumerable<Room>> GetActiveRoomsAsync()
         {
-            _context.Rooms.Update(room);
-            await _context.SaveChangesAsync();
+            return await _dbSet
+                .Where(r => r.IsActive)
+                .ToListAsync();
         }
 
-        public async Task DeleteRoomAsync(Guid roomId)
+        public async Task<bool> IsRoomAvailableAsync(Guid roomId, DateTime checkInDate, DateTime checkOutDate)
         {
-            var room = await GetRoomByIdAsync(roomId);
-            if (room != null)
-            {
-                _context.Rooms.Remove(room);
-                await _context.SaveChangesAsync();
-            }
+            var room = await _dbSet
+                .Include(r => r.Bookings)
+                .FirstOrDefaultAsync(r => r.RoomId == roomId && r.IsActive);
+
+            if (room == null)
+                return false;
+
+            return !room.Bookings.Any(b => 
+                b.BookingStatus != "Cancelled" &&
+                ((b.CheckInDate <= checkInDate && b.CheckOutDate > checkInDate) ||
+                 (b.CheckInDate < checkOutDate && b.CheckOutDate >= checkOutDate) ||
+                 (b.CheckInDate >= checkInDate && b.CheckOutDate <= checkOutDate)));
         }
     }
 }

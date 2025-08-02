@@ -1,51 +1,99 @@
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using HotelBooking.Models.Entities;
+using HotelBooking.Models.DTOs;
 using HotelBooking.BookingService.Services;
 
 namespace HotelBooking.BookingService.Controllers
 {
-    [Route("api/bookings/{bookingId}/requests")]
+    [Route("api/special-requests")]
     [ApiController]
     public class SpecialRequestsController : ControllerBase
     {
-        private readonly ISpecialRequestService _specialRequestService;
+        private readonly SpecialRequestService _specialRequestService;
 
-        public SpecialRequestsController(ISpecialRequestService specialRequestService)
+        public SpecialRequestsController(SpecialRequestService specialRequestService)
         {
             _specialRequestService = specialRequestService;
         }
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<SpecialRequest>>> GetRequestsForBooking(Guid bookingId)
+        [HttpGet("booking/{bookingId}")]
+        public async Task<ActionResult<IEnumerable<SpecialRequestDto>>> GetRequestsByBookingId(Guid bookingId)
         {
-            var requests = await _specialRequestService.GetRequestsByBookingIdAsync(bookingId);
+            var requests = await _specialRequestService.GetSpecialRequestsByBookingIdAsync(bookingId);
             return Ok(requests);
         }
 
-        [HttpPost]
-        public async Task<ActionResult<SpecialRequest>> AddSpecialRequest(Guid bookingId, [FromBody] SpecialRequest request)
+        [HttpGet("pending")]
+        public async Task<ActionResult<IEnumerable<SpecialRequestDto>>> GetPendingRequests()
         {
-            if (request == null || request.BookingId != bookingId)
-            {
-                return BadRequest("Invalid request data.");
-            }
-
-            var createdRequest = await _specialRequestService.AddSpecialRequestAsync(request);
-            return CreatedAtAction(nameof(GetRequestsForBooking), new { bookingId = bookingId }, createdRequest);
+            var requests = await _specialRequestService.GetPendingRequestsAsync();
+            return Ok(requests);
         }
 
-        [HttpPut("{requestId}")]
-        public async Task<ActionResult> UpdateRequestStatus(Guid bookingId, Guid requestId, [FromBody] SpecialRequest request)
+        [HttpGet("{requestId}")]
+        public async Task<ActionResult<SpecialRequestDto>> GetSpecialRequestById(Guid requestId)
         {
-            if (request == null || request.BookingId != bookingId || request.RequestId != requestId)
-            {
-                return BadRequest("Invalid request data.");
-            }
+            var request = await _specialRequestService.GetSpecialRequestByIdAsync(requestId);
+            if (request == null)
+                return NotFound($"Special request with ID {requestId} not found.");
 
-            await _specialRequestService.UpdateRequestStatusAsync(request);
-            return NoContent();
+            return Ok(request);
         }
+
+        [HttpPost("booking/{bookingId}")]
+        public async Task<ActionResult<SpecialRequestDto>> CreateSpecialRequest(Guid bookingId, [FromBody] CreateSpecialRequestDto createDto)
+        {
+            try
+            {
+                var createdRequest = await _specialRequestService.CreateSpecialRequestAsync(bookingId, createDto);
+                return CreatedAtAction(nameof(GetSpecialRequestById), 
+                    new { requestId = createdRequest.RequestId }, createdRequest);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error creating special request: {ex.Message}");
+            }
+        }
+
+        [HttpPut("{requestId}/status")]
+        public async Task<ActionResult> UpdateRequestStatus(Guid requestId, [FromBody] UpdateRequestStatusDto statusDto)
+        {
+            try
+            {
+                var result = await _specialRequestService.UpdateRequestStatusAsync(requestId, statusDto.Status);
+                if (!result)
+                    return NotFound($"Special request with ID {requestId} not found.");
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error updating request status: {ex.Message}");
+            }
+        }
+
+        [HttpDelete("{requestId}")]
+        public async Task<ActionResult> DeleteSpecialRequest(Guid requestId)
+        {
+            try
+            {
+                var result = await _specialRequestService.DeleteSpecialRequestAsync(requestId);
+                if (!result)
+                    return NotFound($"Special request with ID {requestId} not found.");
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error deleting special request: {ex.Message}");
+            }
+        }
+    }
+
+    public class UpdateRequestStatusDto
+    {
+        public string Status { get; set; } = string.Empty;
     }
 }

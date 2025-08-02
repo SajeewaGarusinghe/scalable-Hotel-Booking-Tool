@@ -1,0 +1,683 @@
+{
+  "info": {
+    "name": "Hotel Booking System API",
+    "description": "Comprehensive API collection for testing the Enterprise Hotel Booking System microservices",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "booking_service_url",
+      "value": "https://localhost:5003",
+      "type": "string"
+    },
+    {
+      "key": "analytics_service_url",
+      "value": "https://localhost:5005",
+      "type": "string"
+    },
+    {
+      "key": "api_gateway_url",
+      "value": "https://localhost:5001",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Booking Service",
+      "item": [
+        {
+          "name": "Rooms",
+          "item": [
+            {
+              "name": "Get All Rooms",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{booking_service_url}}/api/rooms",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "rooms"]
+                }
+              }
+            },
+            {
+              "name": "Get Active Rooms",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{booking_service_url}}/api/rooms/active",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "rooms", "active"]
+                }
+              }
+            },
+            {
+              "name": "Get Rooms by Type",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{booking_service_url}}/api/rooms/by-type/Standard",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "rooms", "by-type", "Standard"]
+                }
+              }
+            },
+            {
+              "name": "Get Room by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{booking_service_url}}/api/rooms/{{room_id}}",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "rooms", "{{room_id}}"]
+                }
+              }
+            },
+            {
+              "name": "Check Room Availability",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{booking_service_url}}/api/rooms/availability?checkInDate=2024-03-15&checkOutDate=2024-03-18&numberOfGuests=2",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "rooms", "availability"],
+                  "query": [
+                    {
+                      "key": "checkInDate",
+                      "value": "2024-03-15"
+                    },
+                    {
+                      "key": "checkOutDate",
+                      "value": "2024-03-18"
+                    },
+                    {
+                      "key": "numberOfGuests",
+                      "value": "2"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Create Room",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"roomNumber\": \"101\",\n  \"roomType\": \"Standard\",\n  \"maxOccupancy\": 2,\n  \"pricePerNight\": 100.00,\n  \"description\": \"Comfortable standard room with city view\",\n  \"amenities\": \"[\\\"WiFi\\\", \\\"Air Conditioning\\\", \\\"TV\\\"]\",\n  \"isActive\": true\n}"
+                },
+                "url": {
+                  "raw": "{{booking_service_url}}/api/rooms",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "rooms"]
+                }
+              }
+            },
+            {
+              "name": "Update Room",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"roomNumber\": \"101\",\n  \"roomType\": \"Deluxe\",\n  \"maxOccupancy\": 4,\n  \"pricePerNight\": 150.00,\n  \"description\": \"Upgraded deluxe room with balcony\",\n  \"amenities\": \"[\\\"WiFi\\\", \\\"Air Conditioning\\\", \\\"TV\\\", \\\"Balcony\\\"]\",\n  \"isActive\": true\n}"
+                },
+                "url": {
+                  "raw": "{{booking_service_url}}/api/rooms/{{room_id}}",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "rooms", "{{room_id}}"]
+                }
+              }
+            },
+            {
+              "name": "Delete Room",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{booking_service_url}}/api/rooms/{{room_id}}",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "rooms", "{{room_id}}"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Customers",
+          "item": [
+            {
+              "name": "Get All Customers",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{booking_service_url}}/api/customers",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "customers"]
+                }
+              }
+            },
+            {
+              "name": "Get Customer by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{booking_service_url}}/api/customers/{{customer_id}}",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "customers", "{{customer_id}}"]
+                }
+              }
+            },
+            {
+              "name": "Get Customer by Email",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{booking_service_url}}/api/customers/by-email/john.doe@example.com",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "customers", "by-email", "john.doe@example.com"]
+                }
+              }
+            },
+            {
+              "name": "Create Customer",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"phoneNumber\": \"+1234567890\",\n  \"address\": \"123 Main St, City, State 12345\"\n}"
+                },
+                "url": {
+                  "raw": "{{booking_service_url}}/api/customers",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "customers"]
+                }
+              }
+            },
+            {
+              "name": "Update Customer",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"phoneNumber\": \"+1234567890\",\n  \"address\": \"456 Oak Ave, City, State 12345\"\n}"
+                },
+                "url": {
+                  "raw": "{{booking_service_url}}/api/customers/{{customer_id}}",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "customers", "{{customer_id}}"]
+                }
+              }
+            },
+            {
+              "name": "Delete Customer",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{booking_service_url}}/api/customers/{{customer_id}}",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "customers", "{{customer_id}}"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bookings",
+          "item": [
+            {
+              "name": "Get All Bookings",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{booking_service_url}}/api/bookings?page=1&pageSize=10&status=confirmed",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "bookings"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1"
+                    },
+                    {
+                      "key": "pageSize",
+                      "value": "10"
+                    },
+                    {
+                      "key": "status",
+                      "value": "confirmed"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Booking by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{booking_service_url}}/api/bookings/{{booking_id}}",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "bookings", "{{booking_id}}"]
+                }
+              }
+            },
+            {
+              "name": "Get Bookings by Customer",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{booking_service_url}}/api/bookings/customer/{{customer_id}}",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "bookings", "customer", "{{customer_id}}"]
+                }
+              }
+            },
+            {
+              "name": "Create Booking",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"customerId\": \"{{customer_id}}\",\n  \"roomId\": \"{{room_id}}\",\n  \"checkInDate\": \"2024-03-15\",\n  \"checkOutDate\": \"2024-03-18\",\n  \"numberOfGuests\": 2,\n  \"isRecurring\": false,\n  \"specialRequests\": [\n    {\n      \"requestType\": \"Late Checkout\",\n      \"description\": \"Need to checkout at 2 PM\"\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{booking_service_url}}/api/bookings",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "bookings"]
+                }
+              }
+            },
+            {
+              "name": "Update Booking",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"checkInDate\": \"2024-03-16\",\n  \"checkOutDate\": \"2024-03-19\",\n  \"numberOfGuests\": 3,\n  \"bookingStatus\": \"Confirmed\"\n}"
+                },
+                "url": {
+                  "raw": "{{booking_service_url}}/api/bookings/{{booking_id}}",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "bookings", "{{booking_id}}"]
+                }
+              }
+            },
+            {
+              "name": "Cancel Booking",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{booking_service_url}}/api/bookings/{{booking_id}}",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "bookings", "{{booking_id}}"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Special Requests",
+          "item": [
+            {
+              "name": "Get Requests by Booking",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{booking_service_url}}/api/special-requests/booking/{{booking_id}}",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "special-requests", "booking", "{{booking_id}}"]
+                }
+              }
+            },
+            {
+              "name": "Get Pending Requests",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{booking_service_url}}/api/special-requests/pending",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "special-requests", "pending"]
+                }
+              }
+            },
+            {
+              "name": "Get Special Request by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{booking_service_url}}/api/special-requests/{{request_id}}",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "special-requests", "{{request_id}}"]
+                }
+              }
+            },
+            {
+              "name": "Create Special Request",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"requestType\": \"Extra Bed\",\n  \"description\": \"Need an extra bed for a child\"\n}"
+                },
+                "url": {
+                  "raw": "{{booking_service_url}}/api/special-requests/booking/{{booking_id}}",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "special-requests", "booking", "{{booking_id}}"]
+                }
+              }
+            },
+            {
+              "name": "Update Request Status",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"Approved\"\n}"
+                },
+                "url": {
+                  "raw": "{{booking_service_url}}/api/special-requests/{{request_id}}/status",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "special-requests", "{{request_id}}", "status"]
+                }
+              }
+            },
+            {
+              "name": "Delete Special Request",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{booking_service_url}}/api/special-requests/{{request_id}}",
+                  "host": ["{{booking_service_url}}"],
+                  "path": ["api", "special-requests", "{{request_id}}"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Analytics Service",
+      "item": [
+        {
+          "name": "Reports",
+          "item": [
+            {
+              "name": "Weekly Booking Report",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{analytics_service_url}}/api/reports/weekly?startDate=2024-03-01&endDate=2024-03-07",
+                  "host": ["{{analytics_service_url}}"],
+                  "path": ["api", "reports", "weekly"],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2024-03-01"
+                    },
+                    {
+                      "key": "endDate",
+                      "value": "2024-03-07"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Monthly Analytics",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{analytics_service_url}}/api/reports/monthly?year=2024&month=3",
+                  "host": ["{{analytics_service_url}}"],
+                  "path": ["api", "reports", "monthly"],
+                  "query": [
+                    {
+                      "key": "year",
+                      "value": "2024"
+                    },
+                    {
+                      "key": "month",
+                      "value": "3"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Occupancy Report",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{analytics_service_url}}/api/reports/occupancy?roomType=deluxe&period=last30days",
+                  "host": ["{{analytics_service_url}}"],
+                  "path": ["api", "reports", "occupancy"],
+                  "query": [
+                    {
+                      "key": "roomType",
+                      "value": "deluxe"
+                    },
+                    {
+                      "key": "period",
+                      "value": "last30days"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Revenue Report",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{analytics_service_url}}/api/reports/revenue?startDate=2024-01-01&endDate=2024-03-31",
+                  "host": ["{{analytics_service_url}}"],
+                  "path": ["api", "reports", "revenue"],
+                  "query": [
+                    {
+                      "key": "startDate",
+                      "value": "2024-01-01"
+                    },
+                    {
+                      "key": "endDate",
+                      "value": "2024-03-31"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Generate Custom Report",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reportType\": \"Revenue Analysis\",\n  \"startDate\": \"2024-01-01\",\n  \"endDate\": \"2024-03-31\",\n  \"filters\": {\n    \"roomTypes\": [\"Standard\", \"Deluxe\"],\n    \"includeSpecialRequests\": true\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{analytics_service_url}}/api/reports/custom",
+                  "host": ["{{analytics_service_url}}"],
+                  "path": ["api", "reports", "custom"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Predictions",
+          "item": [
+            {
+              "name": "Price Predictions",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{analytics_service_url}}/api/predictions/pricing?roomType=deluxe&startDate=2024-04-01&endDate=2024-04-30",
+                  "host": ["{{analytics_service_url}}"],
+                  "path": ["api", "predictions", "pricing"],
+                  "query": [
+                    {
+                      "key": "roomType",
+                      "value": "deluxe"
+                    },
+                    {
+                      "key": "startDate",
+                      "value": "2024-04-01"
+                    },
+                    {
+                      "key": "endDate",
+                      "value": "2024-04-30"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Availability Forecast",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{analytics_service_url}}/api/predictions/availability?period=next30days",
+                  "host": ["{{analytics_service_url}}"],
+                  "path": ["api", "predictions", "availability"],
+                  "query": [
+                    {
+                      "key": "period",
+                      "value": "next30days"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Demand Forecast",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{analytics_service_url}}/api/predictions/demand?roomType=standard&period=next7days",
+                  "host": ["{{analytics_service_url}}"],
+                  "path": ["api", "predictions", "demand"],
+                  "query": [
+                    {
+                      "key": "roomType",
+                      "value": "standard"
+                    },
+                    {
+                      "key": "period",
+                      "value": "next7days"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Health Checks",
+      "item": [
+        {
+          "name": "Booking Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{booking_service_url}}/health",
+              "host": ["{{booking_service_url}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "Analytics Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{analytics_service_url}}/health",
+              "host": ["{{analytics_service_url}}"],
+              "path": ["health"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

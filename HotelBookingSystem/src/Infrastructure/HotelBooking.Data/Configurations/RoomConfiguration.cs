@@ -8,13 +8,15 @@ namespace HotelBooking.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<Room> builder)
         {
-            builder.ToTable("Rooms");
+            builder.ToTable("Rooms", "booking");
 
             builder.HasKey(r => r.RoomId);
 
             builder.Property(r => r.RoomNumber)
                 .IsRequired()
-                .HasMaxLength(10)
+                .HasMaxLength(10);
+            
+            builder.HasIndex(r => r.RoomNumber)
                 .IsUnique();
 
             builder.Property(r => r.RoomType)
@@ -42,6 +44,12 @@ namespace HotelBooking.Data.Configurations
 
             builder.Property(r => r.UpdatedAt)
                 .HasDefaultValueSql("GETUTCDATE()");
+
+            // Relationships
+            builder.HasMany(r => r.Bookings)
+                .WithOne(b => b.Room)
+                .HasForeignKey(b => b.RoomId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
