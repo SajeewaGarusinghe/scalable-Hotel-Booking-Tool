@@ -10,9 +10,9 @@ namespace HotelBooking.AnalyticsService.Controllers
     [Route("api/reports")]
     public class ReportsController : ControllerBase
     {
-        private readonly IReportService _reportService;
+        private readonly ReportService _reportService;
 
-        public ReportsController(IReportService reportService)
+        public ReportsController(ReportService reportService)
         {
             _reportService = reportService;
         }

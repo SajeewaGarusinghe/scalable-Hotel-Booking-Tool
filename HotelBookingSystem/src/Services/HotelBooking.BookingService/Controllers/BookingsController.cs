@@ -11,9 +11,9 @@ namespace HotelBooking.BookingService.Controllers
     [Route("api/bookings")]
     public class BookingsController : ControllerBase
     {
-        private readonly BookingService _bookingService;
+        private readonly Services.BookingService _bookingService;
 
-        public BookingsController(BookingService bookingService)
+        public BookingsController(Services.BookingService bookingService)
         {
             _bookingService = bookingService;
         }
@@ -21,7 +21,7 @@ namespace HotelBooking.BookingService.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BookingDto>>> GetAllBookings(int page = 1, int pageSize = 10, string status = "confirmed")
         {
-            var bookings = await _bookingService.GetAllBookingsAsync(page, pageSize, status);
+            var bookings = await _bookingService.GetAllBookingsAsync();
             return Ok(bookings);
         }
 
@@ -51,22 +51,22 @@ namespace HotelBooking.BookingService.Controllers
                 return BadRequest();
             }
 
-            await _bookingService.UpdateBookingAsync(bookingDto);
+            await _bookingService.UpdateBookingAsync(bookingId, bookingDto);
             return NoContent();
         }
 
         [HttpDelete("{bookingId}")]
         public async Task<IActionResult> CancelBooking(Guid bookingId)
         {
-            await _bookingService.CancelBookingAsync(bookingId);
+            await _bookingService.DeleteBookingAsync(bookingId);
             return NoContent();
         }
 
         [HttpGet("availability")]
-        public async Task<ActionResult<bool>> CheckRoomAvailability(DateTime checkIn, DateTime checkOut, int guests)
+        public ActionResult<bool> CheckRoomAvailability(DateTime checkIn, DateTime checkOut, int guests)
         {
-            var isAvailable = await _bookingService.CheckRoomAvailabilityAsync(checkIn, checkOut, guests);
-            return Ok(isAvailable);
+            // Redirect to rooms controller for availability checking
+            return Redirect($"/api/rooms/availability?checkInDate={checkIn:yyyy-MM-dd}&checkOutDate={checkOut:yyyy-MM-dd}&numberOfGuests={guests}");
         }
     }
 }

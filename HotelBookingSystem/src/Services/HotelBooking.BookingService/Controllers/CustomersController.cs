@@ -50,13 +50,34 @@ namespace HotelBooking.BookingService.Controllers
         {
             try
             {
+                // Basic validation
+                if (string.IsNullOrEmpty(customerDto.Email))
+                {
+                    return BadRequest("Email is required");
+                }
+
+                if (string.IsNullOrEmpty(customerDto.FirstName))
+                {
+                    return BadRequest("FirstName is required");
+                }
+
+                if (string.IsNullOrEmpty(customerDto.LastName))
+                {
+                    return BadRequest("LastName is required");
+                }
+
                 var createdCustomer = await _customerService.CreateCustomerAsync(customerDto);
                 return CreatedAtAction(nameof(GetCustomerById), 
                     new { customerId = createdCustomer.CustomerId }, createdCustomer);
             }
             catch (Exception ex)
             {
-                return BadRequest($"Error creating customer: {ex.Message}");
+                // Return more detailed error information
+                return BadRequest(new { 
+                    error = ex.Message, 
+                    innerError = ex.InnerException?.Message,
+                    stackTrace = ex.StackTrace 
+                });
             }
         }
 

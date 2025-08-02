@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using HotelBooking.Models.DTOs;
 
 namespace HotelBooking.AnalyticsService.Controllers
 {
@@ -7,9 +8,9 @@ namespace HotelBooking.AnalyticsService.Controllers
     [ApiController]
     public class PredictionsController : ControllerBase
     {
-        private readonly PredictionService _predictionService;
+        private readonly Services.PredictionService _predictionService;
 
-        public PredictionsController(PredictionService predictionService)
+        public PredictionsController(Services.PredictionService predictionService)
         {
             _predictionService = predictionService;
         }

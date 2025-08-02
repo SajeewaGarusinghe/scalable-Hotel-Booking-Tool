@@ -7,9 +7,9 @@ namespace HotelBooking.AnalyticsService.Controllers
     [ApiController]
     public class ChatbotController : ControllerBase
     {
-        private readonly ChatbotService _chatbotService;
+        private readonly Services.ChatbotService _chatbotService;
 
-        public ChatbotController(ChatbotService chatbotService)
+        public ChatbotController(Services.ChatbotService chatbotService)
         {
             _chatbotService = chatbotService;
         }

@@ -1,16 +1,44 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+var builder = WebApplication.CreateBuilder(args);
 
-public class Program
+// Add services to the container
+builder.Services.AddControllers();
+
+// CORS
+builder.Services.AddCors(options =>
 {
-    public static void Main(string[] args)
+    options.AddPolicy("AllowAll", builder =>
     {
-        CreateHostBuilder(args).Build().Run();
-    }
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
 
-    public static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.UseStartup<Startup>();
-            });
+// Swagger
+builder.Services.AddSwaggerGen();
+
+// Health Checks
+builder.Services.AddHealthChecks();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI(c => 
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Hotel Analytics Service API v1");
+        c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
+    });
+}
+
+app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors("AllowAll");
+
+app.MapControllers();
+app.MapHealthChecks("/health");
+
+app.Run();
