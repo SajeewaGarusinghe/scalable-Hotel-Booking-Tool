@@ -10,6 +10,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_HTTPS_PORT=
+      - HTTPS_PORT=
       - ConnectionStrings__DefaultConnection=Server=hotel-booking-server.database.windows.net;Database=HotelBookingSystem;User Id=dbadmin;Password=HotelBooking1234;TrustServerCertificate=true;Encrypt=true;
       - ServiceUrls__BookingService=http://booking-service:80
       - ServiceUrls__AnalyticsService=http://analytics-service:80
