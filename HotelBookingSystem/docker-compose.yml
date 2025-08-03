@@ -62,6 +62,8 @@ services:
     build:
       context: ./hotel-booking-frontend
       dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: http://51.21.128.214:5000
     container_name: hotel-booking-frontend
     environment:
       - REACT_APP_API_URL=http://51.21.128.214:5000
