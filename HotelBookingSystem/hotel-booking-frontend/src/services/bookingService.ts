@@ -2,6 +2,7 @@ import { apiClient } from './apiClient';
 import { 
   Booking, 
   CreateBookingDto, 
+  UpdateBookingDto,
   SpecialRequest, 
   CreateSpecialRequestDto 
 } from '../types/booking';
@@ -30,7 +31,7 @@ export class BookingService {
     return apiClient.post<Booking>(this.BOOKINGS_BASE, bookingData);
   }
 
-  static async updateBooking(bookingId: string, bookingData: Partial<CreateBookingDto>): Promise<Booking> {
+  static async updateBooking(bookingId: string, bookingData: UpdateBookingDto): Promise<Booking> {
     return apiClient.put<Booking>(`${this.BOOKINGS_BASE}/${bookingId}`, bookingData);
   }
 

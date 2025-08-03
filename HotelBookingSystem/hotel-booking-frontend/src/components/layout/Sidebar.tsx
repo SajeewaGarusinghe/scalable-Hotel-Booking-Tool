@@ -48,19 +48,9 @@ const menuItems = [
     path: '/customers',
   },
   {
-    text: 'Special Requests',
-    icon: <RequestPage />,
-    path: '/special-requests',
-  },
-  {
-    text: 'Reports',
+    text: 'Analytics & Reports',
     icon: <Analytics />,
-    path: '/reports',
-  },
-  {
-    text: 'Chatbot',
-    icon: <SmartToy />,
-    path: '/chatbot',
+    path: '/analytics',
   },
 ];
 

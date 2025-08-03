@@ -25,11 +25,13 @@ export const useRooms = (options: UseRoomsOptions = {}) => {
       let roomsData: Room[];
       
       if (filters?.activeOnly) {
-        roomsData = await RoomService.getActiveRooms();
+        // Filter active rooms from all rooms since we don't have a separate endpoint
+        const allRooms = await RoomService.getAllRooms();
+        roomsData = allRooms.filter(room => room.isActive);
       } else if (filters?.roomType) {
         roomsData = await RoomService.getRoomsByType(filters.roomType);
       } else {
-        roomsData = await RoomService.getRooms();
+        roomsData = await RoomService.getAllRooms();
       }
       
       setRooms(roomsData);
@@ -42,7 +44,7 @@ export const useRooms = (options: UseRoomsOptions = {}) => {
 
   const getRoomById = async (roomId: string): Promise<Room | null> => {
     try {
-      const room = await RoomService.getRoomById(roomId);
+      const room = await RoomService.getRoomById(parseInt(roomId));
       return room;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch room');
@@ -63,7 +65,7 @@ export const useRooms = (options: UseRoomsOptions = {}) => {
 
   const updateRoom = async (roomId: string, roomData: any): Promise<Room | null> => {
     try {
-      const updatedRoom = await RoomService.updateRoom(roomId, roomData);
+      const updatedRoom = await RoomService.updateRoom(parseInt(roomId), roomData);
       setRooms(prev => prev.map(room => 
         room.roomId === roomId ? updatedRoom : room
       ));
@@ -76,7 +78,7 @@ export const useRooms = (options: UseRoomsOptions = {}) => {
 
   const deleteRoom = async (roomId: string): Promise<boolean> => {
     try {
-      await RoomService.deleteRoom(roomId);
+      await RoomService.deleteRoom(parseInt(roomId));
       setRooms(prev => prev.filter(room => room.roomId !== roomId));
       return true;
     } catch (err) {

@@ -25,6 +25,19 @@ export interface CreateBookingDto {
   numberOfGuests: number;
   isRecurring?: boolean;
   recurrencePattern?: string;
+  bookingStatus?: 'Confirmed' | 'Cancelled' | 'Pending' | 'CheckedIn' | 'CheckedOut';
+  bookingReference?: string;
+}
+
+export interface UpdateBookingDto {
+  customerId?: string;
+  roomId?: string;
+  checkInDate?: string;
+  checkOutDate?: string;
+  numberOfGuests?: number;
+  isRecurring?: boolean;
+  recurrencePattern?: string;
+  bookingStatus?: 'Confirmed' | 'Cancelled' | 'Pending' | 'CheckedIn' | 'CheckedOut';
 }
 
 export interface SpecialRequest {

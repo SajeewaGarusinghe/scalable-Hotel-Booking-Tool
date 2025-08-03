@@ -1,12 +1,13 @@
 export interface WeeklyReport {
-  reportId: string;
-  startDate: string;
-  endDate: string;
+  reportId?: string;
+  startDate?: string;
+  endDate?: string;
   totalBookings: number;
   totalRevenue: number;
+  averageBookingValue: number;
   occupancyRate: number;
-  bookings: BookingSummary[];
-  specialRequests: SpecialRequestSummary[];
+  bookings?: BookingSummary[];
+  specialRequests?: SpecialRequestSummary[];
 }
 
 export interface BookingSummary {
@@ -28,12 +29,12 @@ export interface SpecialRequestSummary {
 }
 
 export interface PricePrediction {
-  roomType: string;
-  checkInDate: string;
-  numberOfNights: number;
+  roomType?: string;
+  checkInDate?: string;
+  numberOfNights?: number;
   predictedPrice: number;
-  confidence: number;
-  factors: string[];
+  confidenceLevel?: number;
+  factors?: string[];
 }
 
 export interface AvailabilityForecast {

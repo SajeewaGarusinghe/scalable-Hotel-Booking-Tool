@@ -5,7 +5,7 @@ export interface Room {
   maxOccupancy: number;
   pricePerNight: number;
   description: string;
-  amenities: string[];
+  amenities: string[] | string;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -16,8 +16,18 @@ export interface CreateRoomDto {
   roomType: string;
   maxOccupancy: number;
   pricePerNight: number;
-  description: string;
-  amenities: string[];
+  description?: string; // Optional since it can be empty
+  amenities: string[] | string; // Frontend uses array, backend expects string
+  isActive?: boolean;
+}
+
+export interface UpdateRoomDto {
+  roomNumber?: string;
+  roomType?: string;
+  maxOccupancy?: number;
+  pricePerNight?: number;
+  description?: string;
+  amenities?: string[] | string;
   isActive?: boolean;
 }
 

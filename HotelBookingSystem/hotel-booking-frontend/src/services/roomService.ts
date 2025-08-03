@@ -1,60 +1,75 @@
 import { apiClient } from './apiClient';
-import { 
-  Room, 
-  CreateRoomDto, 
-  RoomAvailabilityQuery, 
-  RoomAvailability 
-} from '../types/room';
-import { ApiResponse, PaginatedResponse, QueryParams } from '../types/api';
+import { Room, CreateRoomDto, UpdateRoomDto } from '../types/room';
 
 export class RoomService {
-  private static readonly ROOMS_BASE = '/api/rooms';
+  private static baseUrl = '/api/rooms';
 
-  static async getRooms(params?: QueryParams): Promise<Room[]> {
-    const queryString = params ? new URLSearchParams(params as any).toString() : '';
-    const url = queryString ? `${this.ROOMS_BASE}?${queryString}` : this.ROOMS_BASE;
-    return apiClient.get<Room[]>(url);
+  static async getAllRooms(): Promise<Room[]> {
+    return await apiClient.get<Room[]>(this.baseUrl);
   }
 
-  static async getActiveRooms(): Promise<Room[]> {
-    return apiClient.get<Room[]>(`${this.ROOMS_BASE}/active`);
-  }
-
-  static async getRoomsByType(roomType: string): Promise<Room[]> {
-    return apiClient.get<Room[]>(`${this.ROOMS_BASE}/by-type/${encodeURIComponent(roomType)}`);
-  }
-
-  static async getRoomById(roomId: string): Promise<Room> {
-    return apiClient.get<Room>(`${this.ROOMS_BASE}/${roomId}`);
-  }
-
-  static async checkAvailability(query: RoomAvailabilityQuery): Promise<RoomAvailability[]> {
-    const params = new URLSearchParams({
-      checkInDate: query.checkInDate,
-      checkOutDate: query.checkOutDate,
-      numberOfGuests: query.numberOfGuests.toString()
-    });
-    
-    return apiClient.get<RoomAvailability[]>(`${this.ROOMS_BASE}/availability?${params}`);
+  static async getRoomById(id: number): Promise<Room> {
+    return await apiClient.get<Room>(`${this.baseUrl}/${id}`);
   }
 
   static async createRoom(roomData: CreateRoomDto): Promise<Room> {
-    return apiClient.post<Room>(this.ROOMS_BASE, roomData);
+    try {
+      // Convert amenities array to JSON string if it's an array
+      const formattedData = {
+        ...roomData,
+        amenities: Array.isArray(roomData.amenities) 
+          ? JSON.stringify(roomData.amenities)
+          : roomData.amenities
+      };
+
+      console.log('Sending room data:', formattedData);
+
+      return await apiClient.post<Room>(this.baseUrl, formattedData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    } catch (error) {
+      console.error('Error creating room:', error);
+      throw error;
+    }
   }
 
-  static async updateRoom(roomId: string, roomData: Partial<CreateRoomDto>): Promise<Room> {
-    return apiClient.put<Room>(`${this.ROOMS_BASE}/${roomId}`, roomData);
+  static async updateRoom(id: number, roomData: UpdateRoomDto): Promise<Room> {
+    try {
+      // Convert amenities array to JSON string if it's an array
+      const formattedData = {
+        ...roomData,
+        amenities: Array.isArray(roomData.amenities) 
+          ? JSON.stringify(roomData.amenities)
+          : roomData.amenities
+      };
+
+      return await apiClient.put<Room>(`${this.baseUrl}/${id}`, formattedData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    } catch (error) {
+      console.error('Error updating room:', error);
+      throw error;
+    }
   }
 
-  static async deleteRoom(roomId: string): Promise<void> {
-    return apiClient.delete<void>(`${this.ROOMS_BASE}/${roomId}`);
+  static async deleteRoom(id: number): Promise<void> {
+    await apiClient.delete(`${this.baseUrl}/${id}`);
   }
 
-  static async getRoomTypes(): Promise<string[]> {
-    const rooms = await this.getRooms();
-    const typeSet = new Set(rooms.map(room => room.roomType));
-    const types = Array.from(typeSet);
-    return types.sort();
+  static async getRoomsByType(roomType: string): Promise<Room[]> {
+    return await apiClient.get<Room[]>(`${this.baseUrl}/type/${roomType}`);
+  }
+
+  static async getAvailableRooms(checkIn?: string, checkOut?: string): Promise<Room[]> {
+    const params = new URLSearchParams();
+    if (checkIn) params.append('checkIn', checkIn);
+    if (checkOut) params.append('checkOut', checkOut);
+    
+    return await apiClient.get<Room[]>(`${this.baseUrl}/available?${params.toString()}`);
   }
 }
 
