@@ -70,7 +70,7 @@ export const LoginPage: React.FC = () => {
       if (err.response) {
         setError(`Server error: ${err.response.status} - ${err.response.data?.error || err.response.statusText}`);
       } else if (err.request) {
-        setError('Network error: Unable to connect to server. Please ensure the API is running on http://localhost:5000');
+        setError('Network error: Unable to connect to server. Please check your internet connection and try again.');
       } else {
         setError(err instanceof Error ? err.message : 'Mock login failed');
       }

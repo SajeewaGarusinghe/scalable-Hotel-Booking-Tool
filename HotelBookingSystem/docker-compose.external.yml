@@ -64,7 +64,7 @@ services:
       dockerfile: Dockerfile
     container_name: hotel-booking-frontend
     environment:
-      - REACT_APP_API_BASE_URL=http://51.21.128.214:5000
+      - REACT_APP_API_URL=http://51.21.128.214:5000
     ports:
       - "3000:80"
       - "80:80"
