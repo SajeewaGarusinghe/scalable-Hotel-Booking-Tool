@@ -12,7 +12,7 @@ services:
       - ASPNETCORE_URLS=http://+:80
       - ASPNETCORE_HTTPS_PORT=
       - HTTPS_PORT=
-      - ConnectionStrings__DefaultConnection=Server=hotel-booking-server.database.windows.net;Database=HotelBookingSystem;User Id=dbadmin;Password=HotelBooking1234;TrustServerCertificate=true;Encrypt=true;
+      - ConnectionStrings__DefaultConnection=Server=hotel-booking-server.database.windows.net;Database=hotel-booking-db;User Id=dbadmin;Password=HotelBooking1234;TrustServerCertificate=true;Encrypt=true;
       - ServiceUrls__BookingService=http://booking-service:80
       - ServiceUrls__AnalyticsService=http://analytics-service:80
       - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
@@ -34,7 +34,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Server=hotel-booking-server.database.windows.net;Database=HotelBookingSystem;User Id=dbadmin;Password=HotelBooking1234;TrustServerCertificate=true;Encrypt=true;
+      - ConnectionStrings__DefaultConnection=Server=hotel-booking-server.database.windows.net;Database=hotel-booking-db;User Id=dbadmin;Password=HotelBooking1234;TrustServerCertificate=true;Encrypt=true;
       - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
     ports:
       - "5003:80"
@@ -51,7 +51,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Server=hotel-booking-server.database.windows.net;Database=HotelBookingSystem;User Id=dbadmin;Password=HotelBooking1234;TrustServerCertificate=true;Encrypt=true;
+      - ConnectionStrings__DefaultConnection=Server=hotel-booking-server.database.windows.net;Database=hotel-booking-db;User Id=dbadmin;Password=HotelBooking1234;TrustServerCertificate=true;Encrypt=true;
       - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
     ports:
       - "5005:80"
