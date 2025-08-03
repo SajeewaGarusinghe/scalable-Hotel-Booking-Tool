@@ -1,8 +1,12 @@
 import { apiClient } from './apiClient';
 import { 
   WeeklyReport, 
+  MonthlyReport,
+  QuickStats,
+  DashboardStats,
   PricePrediction, 
-  AvailabilityForecast, 
+  AvailabilityForecast,
+  DemandForecast,
   ChatbotQuery, 
   ChatbotResponse 
 } from '../types/analytics';
@@ -10,7 +14,30 @@ import {
 export class AnalyticsService {
   private static readonly REPORTS_BASE = '/api/reports';
   private static readonly PREDICTIONS_BASE = '/api/predictions';
+  private static readonly STATISTICS_BASE = '/api/statistics';
   private static readonly CHATBOT_BASE = '/api/chatbot';
+
+  // Statistics
+  static async getQuickStatistics(): Promise<QuickStats> {
+    return apiClient.get<QuickStats>(`${this.STATISTICS_BASE}/quick`);
+  }
+
+  static async getDashboardStatistics(): Promise<DashboardStats> {
+    return apiClient.get<DashboardStats>(`${this.STATISTICS_BASE}/dashboard`);
+  }
+
+  static async getCurrentOccupancyRate(): Promise<number> {
+    return apiClient.get<number>(`${this.STATISTICS_BASE}/occupancy/current`);
+  }
+
+  static async getTodayRevenue(): Promise<number> {
+    return apiClient.get<number>(`${this.STATISTICS_BASE}/revenue/today`);
+  }
+
+  static async getUpcomingBookings(days: number = 7): Promise<any[]> {
+    const params = new URLSearchParams({ days: days.toString() });
+    return apiClient.get<any[]>(`${this.STATISTICS_BASE}/bookings/upcoming?${params}`);
+  }
 
   // Reports
   static async getWeeklyReport(startDate: string, endDate: string): Promise<WeeklyReport> {
@@ -18,12 +45,12 @@ export class AnalyticsService {
     return apiClient.get<WeeklyReport>(`${this.REPORTS_BASE}/weekly?${params}`);
   }
 
-  static async getMonthlyAnalytics(year: number, month: number): Promise<any> {
+  static async getMonthlyReport(year: number, month: number): Promise<MonthlyReport> {
     const params = new URLSearchParams({ 
       year: year.toString(), 
       month: month.toString() 
     });
-    return apiClient.get(`${this.REPORTS_BASE}/monthly?${params}`);
+    return apiClient.get<MonthlyReport>(`${this.REPORTS_BASE}/monthly?${params}`);
   }
 
   static async getOccupancyReport(roomType?: string, period?: string): Promise<any> {
@@ -51,13 +78,13 @@ export class AnalyticsService {
   }
 
   // Predictions
-  static async getPricePredictions(roomType: string, checkInDate: string, numberOfNights: number): Promise<PricePrediction> {
+  static async getPricePredictions(roomType: string, startDate: string, endDate: string): Promise<PricePrediction[]> {
     const params = new URLSearchParams({
       roomType,
-      checkInDate,
-      numberOfNights: numberOfNights.toString()
+      startDate,
+      endDate
     });
-    return apiClient.get<PricePrediction>(`${this.PREDICTIONS_BASE}/pricing?${params}`);
+    return apiClient.get<PricePrediction[]>(`${this.PREDICTIONS_BASE}/pricing?${params}`);
   }
 
   static async getAvailabilityForecast(period: string): Promise<AvailabilityForecast[]> {
@@ -65,14 +92,14 @@ export class AnalyticsService {
     return apiClient.get<AvailabilityForecast[]>(`${this.PREDICTIONS_BASE}/availability?${params}`);
   }
 
-  static async getDemandForecast(roomType?: string, period?: string): Promise<any> {
+  static async getDemandForecast(roomType?: string, period?: string): Promise<DemandForecast[]> {
     const params = new URLSearchParams();
     if (roomType) params.append('roomType', roomType);
     if (period) params.append('period', period);
     
     const queryString = params.toString();
     const url = queryString ? `${this.PREDICTIONS_BASE}/demand?${queryString}` : `${this.PREDICTIONS_BASE}/demand`;
-    return apiClient.get(url);
+    return apiClient.get<DemandForecast[]>(url);
   }
 
   // Chatbot
@@ -101,6 +128,23 @@ export class AnalyticsService {
       endDate: endDate.toISOString().split('T')[0]
     };
   }
-}
 
-export default AnalyticsService;
+  static getCurrentMonthDates(): { year: number; month: number } {
+    const today = new Date();
+    return {
+      year: today.getFullYear(),
+      month: today.getMonth() + 1
+    };
+  }
+
+  static formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount);
+  }
+
+  static formatPercentage(rate: number): string {
+    return `${(rate * 100).toFixed(1)}%`;
+  }
+}

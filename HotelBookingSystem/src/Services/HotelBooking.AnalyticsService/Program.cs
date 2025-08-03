@@ -1,7 +1,26 @@
+using Microsoft.EntityFrameworkCore;
+using HotelBooking.Data.Context;
+using HotelBooking.Data.Repositories;
+using HotelBooking.AnalyticsService.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddControllers();
+
+// Database
+builder.Services.AddDbContext<HotelBookingContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Repository registration
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+
+// Service registration
+builder.Services.AddScoped<ReportService>();
+builder.Services.AddScoped<PredictionService>();
+builder.Services.AddScoped<ChatbotService>();
+builder.Services.AddScoped<StatisticsService>();
 
 // CORS
 builder.Services.AddCors(options =>

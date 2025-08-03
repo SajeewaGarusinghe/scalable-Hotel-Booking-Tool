@@ -11,6 +11,7 @@ namespace HotelBooking.Data.Repositories
         Task<IEnumerable<Room>> GetRoomsByTypeAsync(string roomType);
         Task<Room?> GetRoomByNumberAsync(string roomNumber);
         Task<IEnumerable<Room>> GetActiveRoomsAsync();
+        Task<IEnumerable<Room>> GetAllRoomsAsync();
         Task<bool> IsRoomAvailableAsync(Guid roomId, DateTime checkInDate, DateTime checkOutDate);
     }
 }
