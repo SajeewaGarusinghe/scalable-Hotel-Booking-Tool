@@ -1,0 +1,48 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31913.215
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelBooking.ApiGateway", "src\ApiGateway\HotelBooking.ApiGateway\HotelBooking.ApiGateway.csproj", "{A1B2C3D4-E5F6-7A8B-9C0D-E1F2G3H4I5J6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelBooking.BookingService", "src\Services\HotelBooking.BookingService\HotelBooking.BookingService.csproj", "{B1C2D3E4-F5G6-7H8I-9J0K-L1M2N3O4P5Q6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelBooking.AnalyticsService", "src\Services\HotelBooking.AnalyticsService\HotelBooking.AnalyticsService.csproj", "{C1D2E3F4-G5H6-7I8J-9K0L-M1N2O3P4Q5R6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelBooking.Common", "src\Shared\HotelBooking.Common\HotelBooking.Common.csproj", "{D1E2F3G4-H5I6-7J8K-9L0M-N1O2P3Q4R5S6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelBooking.Models", "src\Shared\HotelBooking.Models\HotelBooking.Models.csproj", "{E1F2G3H4-I5J6-7K8L-9M0N-O1P2Q3R4S5T6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotelBooking.Data", "src\Infrastructure\HotelBooking.Data\HotelBooking.Data.csproj", "{F1G2H3I4-J5K6-7L8M-9N0O-P1Q2R3S4T5U6}"
+EndProject
+Global
+    GlobalSection(SolutionConfigurationPlatforms) = preSolution
+        Debug|Any CPU = Debug|Any CPU
+        Release|Any CPU = Release|Any CPU
+    EndGlobalSection
+    GlobalSection(ProjectConfigurationPlatforms) = postSolution
+        {A1B2C3D4-E5F6-7A8B-9C0D-E1F2G3H4I5J6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+        {A1B2C3D4-E5F6-7A8B-9C0D-E1F2G3H4I5J6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+        {A1B2C3D4-E5F6-7A8B-9C0D-E1F2G3H4I5J6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+        {A1B2C3D4-E5F6-7A8B-9C0D-E1F2G3H4I5J6}.Release|Any CPU.Build.0 = Release|Any CPU
+        {B1C2D3E4-F5G6-7H8I-9J0K-L1M2N3O4P5Q6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+        {B1C2D3E4-F5G6-7H8I-9J0K-L1M2N3O4P5Q6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+        {B1C2D3E4-F5G6-7H8I-9J0K-L1M2N3O4P5Q6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+        {B1C2D3E4-F5G6-7H8I-9J0K-L1M2N3O4P5Q6}.Release|Any CPU.Build.0 = Release|Any CPU
+        {C1D2E3F4-G5H6-7I8J-9K0L-M1N2O3P4Q5R6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+        {C1D2E3F4-G5H6-7I8J-9K0L-M1N2O3P4Q5R6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+        {C1D2E3F4-G5H6-7I8J-9K0L-M1N2O3P4Q5R6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+        {C1D2E3F4-G5H6-7I8J-9K0L-M1N2O3P4Q5R6}.Release|Any CPU.Build.0 = Release|Any CPU
+        {D1E2F3G4-H5I6-7J8K-9L0M-N1O2P3Q4R5S6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+        {D1E2F3G4-H5I6-7J8K-9L0M-N1O2P3Q4R5S6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+        {D1E2F3G4-H5I6-7J8K-9L0M-N1O2P3Q4R5S6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+        {D1E2F3G4-H5I6-7J8K-9L0M-N1O2P3Q4R5S6}.Release|Any CPU.Build.0 = Release|Any CPU
+        {E1F2G3H4-I5J6-7K8L-9M0N-O1P2Q3R4S5T6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+        {E1F2G3H4-I5J6-7K8L-9M0N-O1P2Q3R4S5T6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+        {E1F2G3H4-I5J6-7K8L-9M0N-O1P2Q3R4S5T6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+        {E1F2G3H4-I5J6-7K8L-9M0N-O1P2Q3R4S5T6}.Release|Any CPU.Build.0 = Release|Any CPU
+        {F1G2H3I4-J5K6-7L8M-9N0O-P1Q2R3S4T5U6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+        {F1G2H3I4-J5K6-7L8M-9N0O-P1Q2R3S4T5U6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+        {F1G2H3I4-J5K6-7L8M-9N0O-P1Q2R3S4T5U6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+        {F1G2H3I4-J5K6-7L8M-9N0O-P1Q2R3S4T5U6}.Release|Any CPU.Build.0 = Release|Any CPU
+    EndGlobalSection
+EndGlobal

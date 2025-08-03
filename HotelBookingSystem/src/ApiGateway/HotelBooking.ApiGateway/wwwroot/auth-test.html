@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Booking - Authentication Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .auth-container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+        .btn {
+            background-color: #4285f4;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover {
+            background-color: #357ae8;
+        }
+        .btn.config {
+            background-color: #28a745;
+        }
+        .btn.config:hover {
+            background-color: #218838;
+        }
+        .info {
+            background-color: #f0f0f0;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .warning {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Hotel Booking System - Authentication Test</h1>
+    
+    <div class="auth-container">
+        <h2>Configuration Test</h2>
+        <button class="btn config" onclick="testConfiguration()">Test Configuration</button>
+        <div class="warning">
+            <strong>Important:</strong> Make sure your Google OAuth app has these redirect URIs configured:
+            <ul>
+                <li><code id="callback-http">http://localhost:5000/signin-google</code></li>
+                <li><code id="callback-https">https://localhost:5001/signin-google</code></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="auth-container">
+        <h2>Google Authentication</h2>
+        <a href="/api/auth/google-login" class="btn">Login with Google (Redirect)</a>
+        <button class="btn" onclick="loginWithGooglePopup()">Login with Google (Popup)</button>
+        <button class="btn" onclick="logout()">Logout</button>
+        <button class="btn" onclick="getUserInfo()">Get User Info</button>
+    </div>
+
+    <div class="auth-container">
+        <h2>Test Protected API</h2>
+        <button class="btn" onclick="testProtectedAPI()">Test Bookings API</button>
+        <button class="btn" onclick="testReportsAPI()">Test Reports API</button>
+    </div>
+
+    <div id="results" class="info">
+        Ready to test authentication...
+    </div>
+
+    <script>
+        let authToken = localStorage.getItem('auth_token');
+        
+        // Update callback URLs with current host
+        document.getElementById('callback-http').textContent = `http://${window.location.host}/signin-google`;
+        document.getElementById('callback-https').textContent = `https://${window.location.host}/signin-google`;
+        
+        function updateResults(message, type = 'info') {
+            const results = document.getElementById('results');
+            results.className = type;
+            if (typeof message === 'object') {
+                results.innerHTML = '<pre>' + JSON.stringify(message, null, 2) + '</pre>';
+            } else {
+                results.innerHTML = message;
+            }
+        }
+
+        async function testConfiguration() {
+            try {
+                const response = await fetch('/api/auth/config-test');
+                if (response.ok) {
+                    const config = await response.json();
+                    updateResults(config, 'success');
+                } else {
+                    updateResults(`Configuration test failed: ${response.status} ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                updateResults(`Configuration test error: ${error.message}`, 'error');
+            }
+        }
+
+        function loginWithGooglePopup() {
+            const popup = window.open('/api/auth/google-login', 'googleAuth', 'width=500,height=600');
+            
+            window.addEventListener('message', function(event) {
+                if (event.data.type === 'AUTH_SUCCESS') {
+                    authToken = event.data.token;
+                    localStorage.setItem('auth_token', authToken);
+                    localStorage.setItem('user_info', JSON.stringify(event.data.user));
+                    updateResults(`Authentication successful! Token: ${authToken.substring(0, 50)}...`, 'success');
+                    popup.close();
+                }
+            });
+        }
+
+        function logout() {
+            authToken = null;
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_info');
+            updateResults('Logged out successfully', 'success');
+        }
+
+        async function getUserInfo() {
+            if (!authToken) {
+                updateResults('Please login first', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/user-info', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (response.ok) {
+                    const userInfo = await response.json();
+                    updateResults(userInfo, 'success');
+                } else {
+                    updateResults(`Failed to get user info: ${response.status} ${response.statusText}`, 'error');
+                }
+            } catch (error) {
+                updateResults(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testProtectedAPI() {
+            if (!authToken) {
+                updateResults('Please login first', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/bookings', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.text();
+                if (response.ok) {
+                    updateResults(`Bookings API Response: ${data}`, 'success');
+                } else {
+                    updateResults(`Bookings API Error: ${response.status} ${response.statusText}\n${data}`, 'error');
+                }
+            } catch (error) {
+                updateResults(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testReportsAPI() {
+            if (!authToken) {
+                updateResults('Please login first', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/reports', {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.text();
+                if (response.ok) {
+                    updateResults(`Reports API Response: ${data}`, 'success');
+                } else {
+                    updateResults(`Reports API Error: ${response.status} ${response.statusText}\n${data}`, 'error');
+                }
+            } catch (error) {
+                updateResults(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Check if user is already logged in
+        if (authToken) {
+            updateResults(`Already logged in. Token: ${authToken.substring(0, 50)}...`, 'success');
+        }
+
+        // Parse URL parameters for error handling
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        if (error) {
+            updateResults(`Authentication error: ${decodeURIComponent(error)}`, 'error');
+        }
+
+        // Handle auth success from redirect
+        window.addEventListener('message', function(event) {
+            if (event.data.type === 'AUTH_SUCCESS') {
+                authToken = event.data.token;
+                localStorage.setItem('auth_token', authToken);
+                localStorage.setItem('user_info', JSON.stringify(event.data.user));
+                updateResults(`Authentication successful! Token: ${authToken.substring(0, 50)}...`, 'success');
+            }
+        });
+    </script>
+</body>
+</html>
