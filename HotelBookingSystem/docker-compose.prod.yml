@@ -1,28 +1,6 @@
 version: '3.8'
 
 services:
-  # SQL Server Database
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: hotel-booking-sqlserver-prod
-    environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=${SQL_SERVER_PASSWORD:-HotelBooking1234!}
-      - MSSQL_PID=Express
-    ports:
-      - "1433:1433"
-    volumes:
-      - sqlserver_data_prod:/var/opt/mssql
-      - ./scripts:/docker-entrypoint-initdb.d
-    networks:
-      - hotel-booking-network
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${SQL_SERVER_PASSWORD:-HotelBooking1234!} -Q 'SELECT 1'"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-
   # API Gateway Service
   api-gateway:
     build:
@@ -32,18 +10,14 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=HotelBookingSystem;User Id=sa;Password=${SQL_SERVER_PASSWORD:-HotelBooking1234!};TrustServerCertificate=true;
+      - ConnectionStrings__DefaultConnection=Server=hotel-booking-server.database.windows.net;Database=HotelBookingSystem;User Id=dbadmin;Password=HotelBooking1234;TrustServerCertificate=true;Encrypt=true;
       - ServiceUrls__BookingService=http://booking-service:80
       - ServiceUrls__AnalyticsService=http://analytics-service:80
     ports:
       - "80:80"
     depends_on:
-      sqlserver:
-        condition: service_healthy
-      booking-service:
-        condition: service_started
-      analytics-service:
-        condition: service_started
+      - booking-service
+      - analytics-service
     networks:
       - hotel-booking-network
     restart: unless-stopped
@@ -62,10 +36,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=HotelBookingSystem;User Id=sa;Password=${SQL_SERVER_PASSWORD:-HotelBooking1234!};TrustServerCertificate=true;
-    depends_on:
-      sqlserver:
-        condition: service_healthy
+      - ConnectionStrings__DefaultConnection=Server=hotel-booking-server.database.windows.net;Database=HotelBookingSystem;User Id=dbadmin;Password=HotelBooking1234;TrustServerCertificate=true;Encrypt=true;
     networks:
       - hotel-booking-network
     restart: unless-stopped
@@ -84,10 +55,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:80
-      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=HotelBookingSystem;User Id=sa;Password=${SQL_SERVER_PASSWORD:-HotelBooking1234!};TrustServerCertificate=true;
-    depends_on:
-      sqlserver:
-        condition: service_healthy
+      - ConnectionStrings__DefaultConnection=Server=hotel-booking-server.database.windows.net;Database=HotelBookingSystem;User Id=dbadmin;Password=HotelBooking1234;TrustServerCertificate=true;Encrypt=true;
     networks:
       - hotel-booking-network
     restart: unless-stopped
@@ -127,10 +95,6 @@ services:
     networks:
       - hotel-booking-network
     restart: unless-stopped
-
-volumes:
-  sqlserver_data_prod:
-    driver: local
 
 networks:
   hotel-booking-network:

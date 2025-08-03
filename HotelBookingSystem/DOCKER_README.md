@@ -57,9 +57,9 @@ docker-compose logs -f
         ┌────────────────────────┼────────────────────────┐
         │                        │                        │
 ┌───────▼───────┐    ┌───────────▼─────────┐    ┌─────────▼────────┐
-│ Booking       │    │ Analytics           │    │ SQL Server       │
+│ Booking       │    │ Analytics           │    │ Azure SQL        │
 │ Service       │    │ Service             │    │ Database         │
-│ (Port 5003)   │    │ (Port 5005)         │    │ (Port 1433)      │
+│ (Port 5003)   │    │ (Port 5005)         │    │ (External)       │
 └───────────────┘    └─────────────────────┘    └──────────────────┘
 ```
 
@@ -85,8 +85,8 @@ docker-compose logs -f
 Key environment variables in `.env` file:
 
 ```bash
-# Database
-SQL_SERVER_PASSWORD=HotelBooking1234!
+# Database (Azure SQL Database)
+CONNECTION_STRING=Server=hotel-booking-server.database.windows.net;Database=HotelBookingSystem;User Id=dbadmin;Password=HotelBooking1234;TrustServerCertificate=true;Encrypt=true;
 
 # Frontend
 REACT_APP_API_BASE_URL=http://localhost:5000
@@ -143,23 +143,18 @@ docker stats
 
 ## Database Access
 
-### Connect to SQL Server
+### Connect to Azure SQL Database
 ```bash
-# Using Docker exec
-docker exec -it hotel-booking-sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'HotelBooking1234!'
-
-# Using external client
-Server: localhost,1433
-Username: sa
-Password: HotelBooking1234!
+# Using external client (SSMS, Azure Data Studio, etc.)
+Server: hotel-booking-server.database.windows.net
+Username: dbadmin
+Password: HotelBooking1234
 Database: HotelBookingSystem
+Encryption: Required
 ```
 
-### Initialize Database
-```bash
-# Run database setup script
-docker exec -it hotel-booking-sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'HotelBooking1234!' -i /scripts/complete-database-setup.sql
-```
+### Database is Pre-configured
+The system uses an existing Azure SQL Database. The database schema and sample data should already be set up as per the deployment guide.
 
 ## Troubleshooting
 
@@ -184,8 +179,12 @@ docker exec -it hotel-booking-sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost
 
 3. **Database connection issues**
    ```bash
-   # Test database connection
-   docker exec hotel-booking-sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'HotelBooking1234!' -Q "SELECT 1"
+   # Test database connection through API services
+   curl http://localhost:5000/health
+   curl http://localhost:5003/health
+   
+   # Check Azure SQL Database connectivity from your machine
+   # Use SSMS or Azure Data Studio to verify connection
    ```
 
 4. **Frontend can't reach backend**

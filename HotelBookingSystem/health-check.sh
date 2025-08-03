@@ -54,13 +54,14 @@ check_container() {
 
 # Function to check database connectivity
 check_database() {
-    echo -n "Checking database connectivity... "
+    echo -n "Checking database connectivity (Azure SQL)... "
     
-    if docker exec hotel-booking-sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'HotelBooking1234!' -Q "SELECT 1" > /dev/null 2>&1; then
-        echo -e "${GREEN}✓ Connected${NC}"
+    # Since we're using external Azure SQL, we'll test through the API services
+    if check_service "API Gateway" "http://localhost:5000/health" > /dev/null 2>&1; then
+        echo -e "${GREEN}✓ Connected via API Gateway${NC}"
         return 0
     else
-        echo -e "${RED}✗ Failed${NC}"
+        echo -e "${RED}✗ Failed to connect via services${NC}"
         return 1
     fi
 }
@@ -91,7 +92,7 @@ show_service_urls() {
     echo "API Gateway:       http://localhost:5000"
     echo "Booking Service:   http://localhost:5003"
     echo "Analytics Service: http://localhost:5005"
-    echo "Database:          localhost:1433"
+    echo "Database:          Azure SQL Database (hotel-booking-server.database.windows.net)"
 }
 
 # Main health check
@@ -108,7 +109,6 @@ main() {
     fi
     
     echo "=== Container Status ==="
-    check_container "hotel-booking-sqlserver"
     check_container "hotel-booking-api-gateway"
     check_container "hotel-booking-booking-service"
     check_container "hotel-booking-analytics-service"
@@ -134,7 +134,7 @@ main() {
     echo "To view logs for a specific service:"
     echo "  docker-compose logs -f [service-name]"
     echo ""
-    echo "Available services: sqlserver, api-gateway, booking-service, analytics-service, frontend"
+    echo "Available services: api-gateway, booking-service, analytics-service, frontend"
 }
 
 # Run health check
