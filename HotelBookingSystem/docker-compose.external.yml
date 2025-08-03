@@ -74,6 +74,21 @@ services:
       - hotel-booking-network
     restart: unless-stopped
 
+  # Nginx Reverse Proxy for external access
+  nginx:
+    image: nginx:alpine
+    container_name: hotel-booking-nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx-external.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - frontend
+      - api-gateway
+    networks:
+      - hotel-booking-network
+    restart: unless-stopped
+
 networks:
   hotel-booking-network:
     driver: bridge

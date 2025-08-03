@@ -45,7 +45,7 @@ start_services() {
 check_services_health() {
     echo "🏥 Checking services health..."
     
-    local services=("sqlserver" "booking-service" "analytics-service" "api-gateway" "frontend")
+    local services=("booking-service" "analytics-service" "api-gateway" "frontend")
     
     for service in "${services[@]}"; do
         echo "Checking $service..."
@@ -65,7 +65,7 @@ show_urls() {
     echo "API Gateway: http://localhost:5000"
     echo "Booking Service: http://localhost:5003"
     echo "Analytics Service: http://localhost:5005"
-    echo "SQL Server: localhost:1433"
+    echo "Database: Azure SQL Database (External)"
     echo ""
     echo "📖 API Documentation:"
     echo "Swagger UI: http://localhost:5000/swagger"
@@ -77,7 +77,7 @@ show_logs() {
     echo "📋 To view logs, use:"
     echo "docker-compose logs -f [service_name]"
     echo ""
-    echo "Available services: sqlserver, api-gateway, booking-service, analytics-service, frontend"
+    echo "Available services: api-gateway, booking-service, analytics-service, frontend"
 }
 
 # Main execution
