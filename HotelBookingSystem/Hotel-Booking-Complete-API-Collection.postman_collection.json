@@ -1,0 +1,433 @@
+{
+  "info": {
+    "name": "Hotel Booking System API - Mock Auth Collection",
+    "description": "API collection with mock authentication for development and testing",
+    "version": "2.1.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "booking_service_url",
+      "value": "http://localhost:5002",
+      "type": "string"
+    },
+    {
+      "key": "analytics_service_url",
+      "value": "http://localhost:5004",
+      "type": "string"
+    },
+    {
+      "key": "api_gateway_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "mock_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{mock_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Mock Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    // Handle both Token and token property names",
+                  "    const token = response.Token || response.token;",
+                  "    if (token) {",
+                  "        pm.collectionVariables.set('mock_token', token);",
+                  "        console.log('Mock Token saved:', token);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"name\": \"Test User\"\n}"
+            },
+            "url": {
+              "raw": "{{api_gateway_url}}/api/auth/mock-login",
+              "host": ["{{api_gateway_url}}"],
+              "path": ["api", "auth", "mock-login"]
+            },
+            "description": "Mock authentication login - accepts any email and name"
+          }
+        },
+        {
+          "name": "Get User Info",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{mock_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/auth/user-info",
+              "host": ["{{api_gateway_url}}"],
+              "path": ["api", "auth", "user-info"]
+            },
+            "description": "Get current user information using mock token"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{mock_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/auth/logout",
+              "host": ["{{api_gateway_url}}"],
+              "path": ["api", "auth", "logout"]
+            },
+            "description": "Logout user (mock implementation)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "API Gateway - Customers",
+      "item": [
+        {
+          "name": "Get All Customers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/customers",
+              "host": ["{{api_gateway_url}}"],
+              "path": ["api", "customers"]
+            },
+            "description": "Get all customers via API Gateway (no authentication required)"
+          }
+        },
+        {
+          "name": "Create Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"gateway-customer@example.com\",\n  \"firstName\": \"Gateway\",\n  \"lastName\": \"Customer\",\n  \"phoneNumber\": \"+1234567890\",\n  \"address\": \"123 Gateway Street, API City\"\n}"
+            },
+            "url": {
+              "raw": "{{api_gateway_url}}/api/customers",
+              "host": ["{{api_gateway_url}}"],
+              "path": ["api", "customers"]
+            },
+            "description": "Create customer via API Gateway (no authentication required)"
+          }
+        },
+        {
+          "name": "Get Customer by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/customers/{{customer_id}}",
+              "host": ["{{api_gateway_url}}"],
+              "path": ["api", "customers", "{{customer_id}}"]
+            },
+            "description": "Get customer by ID via API Gateway (no authentication required)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "API Gateway - Rooms",
+      "item": [
+        {
+          "name": "Get All Rooms (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/rooms",
+              "host": ["{{api_gateway_url}}"],
+              "path": ["api", "rooms"]
+            },
+            "description": "Get all rooms (public access)"
+          }
+        },
+        {
+          "name": "Check Room Availability (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/rooms/availability?checkInDate=2024-03-15&checkOutDate=2024-03-18&numberOfGuests=2",
+              "host": ["{{api_gateway_url}}"],
+              "path": ["api", "rooms", "availability"],
+              "query": [
+                {
+                  "key": "checkInDate",
+                  "value": "2024-03-15"
+                },
+                {
+                  "key": "checkOutDate",
+                  "value": "2024-03-18"
+                },
+                {
+                  "key": "numberOfGuests",
+                  "value": "2"
+                }
+              ]
+            },
+            "description": "Check room availability (public access)"
+          }
+        },
+        {
+          "name": "Create Room (No Auth Required)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roomNumber\": \"401\",\n  \"roomType\": \"Presidential Suite\",\n  \"maxOccupancy\": 8,\n  \"pricePerNight\": 500.00,\n  \"description\": \"Luxury presidential suite\",\n  \"amenities\": \"[\\\"WiFi\\\", \\\"Air Conditioning\\\", \\\"TV\\\", \\\"Balcony\\\", \\\"Mini Bar\\\", \\\"Jacuzzi\\\", \\\"Private Chef\\\"]\",\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{api_gateway_url}}/api/rooms",
+              "host": ["{{api_gateway_url}}"],
+              "path": ["api", "rooms"]
+            },
+            "description": "Create room (no authentication required)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "API Gateway - Bookings",
+      "item": [
+        {
+          "name": "Get All Bookings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/bookings",
+              "host": ["{{api_gateway_url}}"],
+              "path": ["api", "bookings"]
+            },
+            "description": "Get all bookings (no authentication required)"
+          }
+        },
+        {
+          "name": "Create Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"{{customer_id}}\",\n  \"roomId\": \"{{room_id}}\",\n  \"checkInDate\": \"2024-03-15\",\n  \"checkOutDate\": \"2024-03-18\",\n  \"numberOfGuests\": 2,\n  \"isRecurring\": false\n}"
+            },
+            "url": {
+              "raw": "{{api_gateway_url}}/api/bookings",
+              "host": ["{{api_gateway_url}}"],
+              "path": ["api", "bookings"]
+            },
+            "description": "Create booking (no authentication required)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "API Gateway - Analytics",
+      "item": [
+        {
+          "name": "Weekly Report",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/reports/weekly?startDate=2024-03-01&endDate=2024-03-07",
+              "host": ["{{api_gateway_url}}"],
+              "path": ["api", "reports", "weekly"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2024-03-01"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2024-03-07"
+                }
+              ]
+            },
+            "description": "Get weekly report (no authentication required)"
+          }
+        },
+        {
+          "name": "Price Predictions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/api/predictions/pricing?roomType=Standard&checkInDate=2024-03-15&numberOfNights=3",
+              "host": ["{{api_gateway_url}}"],
+              "path": ["api", "predictions", "pricing"],
+              "query": [
+                {
+                  "key": "roomType",
+                  "value": "Standard"
+                },
+                {
+                  "key": "checkInDate",
+                  "value": "2024-03-15"
+                },
+                {
+                  "key": "numberOfNights",
+                  "value": "3"
+                }
+              ]
+            },
+            "description": "Get price predictions (no authentication required)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Direct Service Access",
+      "item": [
+        {
+          "name": "Direct - Create Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"direct-customer@example.com\",\n  \"firstName\": \"Direct\",\n  \"lastName\": \"Customer\",\n  \"phoneNumber\": \"+1234567890\",\n  \"address\": \"123 Direct Street, Service City\"\n}"
+            },
+            "url": {
+              "raw": "{{booking_service_url}}/api/customers",
+              "host": ["{{booking_service_url}}"],
+              "path": ["api", "customers"]
+            },
+            "description": "Create customer directly to Booking Service"
+          }
+        },
+        {
+          "name": "Direct - Get All Rooms",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{booking_service_url}}/api/rooms",
+              "host": ["{{booking_service_url}}"],
+              "path": ["api", "rooms"]
+            },
+            "description": "Get all rooms directly from Booking Service"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Checks",
+      "item": [
+        {
+          "name": "API Gateway Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{api_gateway_url}}/health",
+              "host": ["{{api_gateway_url}}"],
+              "path": ["health"]
+            },
+            "description": "Check API Gateway health"
+          }
+        },
+        {
+          "name": "Booking Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{booking_service_url}}/health",
+              "host": ["{{booking_service_url}}"],
+              "path": ["health"]
+            },
+            "description": "Check Booking Service health"
+          }
+        },
+        {
+          "name": "Analytics Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{analytics_service_url}}/health",
+              "host": ["{{analytics_service_url}}"],
+              "path": ["health"]
+            },
+            "description": "Check Analytics Service health"
+          }
+        }
+      ]
+    }
+  ]
+}

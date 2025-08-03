@@ -38,7 +38,6 @@ namespace HotelBooking.BookingService.Services
         {
             var customer = new Customer
             {
-                GoogleId = customerDto.GoogleId,
                 Email = customerDto.Email,
                 FirstName = customerDto.FirstName,
                 LastName = customerDto.LastName,
@@ -76,7 +75,6 @@ namespace HotelBooking.BookingService.Services
             return new CustomerDto
             {
                 CustomerId = customer.CustomerId,
-                GoogleId = customer.GoogleId,
                 Email = customer.Email,
                 FirstName = customer.FirstName,
                 LastName = customer.LastName,

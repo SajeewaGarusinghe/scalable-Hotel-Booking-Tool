@@ -19,11 +19,6 @@ namespace HotelBooking.Data.Repositories
             return await _dbSet.FirstOrDefaultAsync(c => c.Email == email);
         }
 
-        public async Task<Customer?> GetByGoogleIdAsync(string googleId)
-        {
-            return await _dbSet.FirstOrDefaultAsync(c => c.GoogleId == googleId);
-        }
-
         public async Task<IEnumerable<Customer>> GetCustomersWithBookingsAsync()
         {
             return await _dbSet

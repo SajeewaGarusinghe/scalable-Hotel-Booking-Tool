@@ -12,13 +12,6 @@ namespace HotelBooking.Data.Configurations
 
             builder.HasKey(c => c.CustomerId);
 
-            builder.Property(c => c.GoogleId)
-                .HasMaxLength(100);
-
-            builder.HasIndex(c => c.GoogleId)
-                .IsUnique()
-                .HasFilter("[GoogleId] IS NOT NULL");
-
             builder.Property(c => c.Email)
                 .IsRequired()
                 .HasMaxLength(100);
