@@ -78,11 +78,16 @@ export class AnalyticsService {
   }
 
   // Predictions
-  static async getPricePredictions(roomType: string, startDate: string, endDate: string): Promise<PricePrediction[]> {
+  static async getPricePredictions(roomType: string, checkInDate: string, numberOfNights: string): Promise<PricePrediction[]> {
+    // Calculate end date from check-in date and number of nights
+    const checkIn = new Date(checkInDate);
+    const checkOut = new Date(checkIn);
+    checkOut.setDate(checkIn.getDate() + parseInt(numberOfNights));
+    
     const params = new URLSearchParams({
       roomType,
-      startDate,
-      endDate
+      startDate: checkInDate,
+      endDate: checkOut.toISOString().split('T')[0]
     });
     return apiClient.get<PricePrediction[]>(`${this.PREDICTIONS_BASE}/pricing?${params}`);
   }
