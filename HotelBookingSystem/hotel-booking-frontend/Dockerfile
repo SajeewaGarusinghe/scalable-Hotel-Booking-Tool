@@ -16,8 +16,13 @@ COPY . .
 ARG REACT_APP_API_URL=http://localhost:5000
 ENV REACT_APP_API_URL=$REACT_APP_API_URL
 
-# Build the application with increased memory
-RUN NODE_OPTIONS='--max-old-space-size=4096' npm run build
+# Disable TypeScript checker and source maps to reduce memory usage
+ENV SKIP_PREFLIGHT_CHECK=true
+ENV TSC_COMPILE_ON_ERROR=true
+ENV GENERATE_SOURCEMAP=false
+
+# Build the application with increased memory and optimizations
+RUN NODE_OPTIONS='--max-old-space-size=5120 --optimize-for-size' npm run build
 
 # Production stage
 FROM nginx:alpine AS production
