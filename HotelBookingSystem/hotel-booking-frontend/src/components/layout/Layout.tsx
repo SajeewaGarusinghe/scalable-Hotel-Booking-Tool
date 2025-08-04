@@ -4,6 +4,7 @@ import { Header } from './Header';
 import { Sidebar } from './Sidebar';
 import { Footer } from './Footer';
 import { ToastProvider } from '../common/ToastProvider';
+import { FloatingChatbot } from '../index';
 
 interface LayoutProps {
   children: ReactNode;
@@ -33,6 +34,9 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         </Box>
 
         <Footer />
+        
+        {/* Global Floating Chatbot - Accessible on every page */}
+        <FloatingChatbot />
       </Box>
     </ToastProvider>
   );
