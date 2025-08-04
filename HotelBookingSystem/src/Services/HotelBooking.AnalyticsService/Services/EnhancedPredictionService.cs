@@ -159,7 +159,7 @@ namespace HotelBooking.AnalyticsService.Services
             {
                 Date = p.PredictionDate,
                 Value = p.PredictedPrice,
-                Label = p.PredictionDate.ToString("MMM dd")
+                Metric = "Price"
             }).ToList();
 
             var trendDirection = AnalyzeTrendDirection(predictions);

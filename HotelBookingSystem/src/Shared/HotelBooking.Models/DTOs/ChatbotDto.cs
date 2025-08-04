@@ -18,7 +18,7 @@ namespace HotelBooking.Models.DTOs
         public decimal ConfidenceLevel { get; set; }
         public object? Data { get; set; }
         public List<string> Suggestions { get; set; } = new();
-        public List<ChartDataDto>? Charts { get; set; }
+        public List<ChatbotChartDataDto>? Charts { get; set; }
         public int ProcessingTimeMs { get; set; }
     }
 
@@ -63,7 +63,7 @@ namespace HotelBooking.Models.DTOs
         public DateTime End { get; set; }
     }
 
-    public class ChartDataDto
+    public class ChatbotChartDataDto
     {
         public string Type { get; set; } = string.Empty; // line, bar, pie
         public string Title { get; set; } = string.Empty;

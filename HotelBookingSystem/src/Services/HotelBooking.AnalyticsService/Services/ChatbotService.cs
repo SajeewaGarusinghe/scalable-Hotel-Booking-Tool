@@ -108,16 +108,16 @@ namespace HotelBooking.AnalyticsService.Services
                     var prediction = predictions.First();
                     var response = $"Based on historical data and current trends, I predict the price for a {roomType} room on {checkInDate:MMM dd, yyyy} will be around ${prediction.PredictedPrice:F2} per night.";
                     
-                    if (prediction.ConfidenceLevel.HasValue)
+                    if (prediction.ConfidenceLevel > 0)
                     {
-                        response += $" I'm {(prediction.ConfidenceLevel.Value * 100):F0}% confident in this prediction.";
+                        response += $" I'm {(prediction.ConfidenceLevel * 100):F0}% confident in this prediction.";
                     }
 
                     return new ChatbotResponseDto
                     {
                         Response = response,
                         ResponseType = "prediction",
-                        ConfidenceLevel = prediction.ConfidenceLevel ?? 0.7m,
+                        ConfidenceLevel = prediction.ConfidenceLevel > 0 ? prediction.ConfidenceLevel : 0.7m,
                         Data = new PredictiveChatbotDataDto
                         {
                             Type = "price",
