@@ -6,8 +6,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install ALL dependencies (including dev dependencies for build)
+RUN npm ci && npm cache clean --force
 
 # Copy source code
 COPY . .
@@ -16,8 +16,8 @@ COPY . .
 ARG REACT_APP_API_URL=http://localhost:5000
 ENV REACT_APP_API_URL=$REACT_APP_API_URL
 
-# Build the application
-RUN npm run build
+# Build the application with increased memory
+RUN NODE_OPTIONS='--max-old-space-size=4096' npm run build
 
 # Production stage
 FROM nginx:alpine AS production

@@ -375,7 +375,7 @@ logs/
 # Docker
 Dockerfile.debug
 docker-compose.debug.yml
-.dockerignore
+#.dockerignore
 
 # Azure Functions
 local.settings.json
