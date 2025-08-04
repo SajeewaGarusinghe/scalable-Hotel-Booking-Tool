@@ -24,6 +24,20 @@ namespace HotelBooking.AnalyticsService.Controllers
             return Ok(report);
         }
 
+        [HttpGet("weekly/detailed")]
+        public async Task<ActionResult<WeeklyBookingsReportDto>> GetDetailedWeeklyReport([FromQuery] string startDate, [FromQuery] string endDate)
+        {
+            var report = await _reportService.GenerateDetailedWeeklyReportAsync(startDate, endDate);
+            return Ok(report);
+        }
+
+        [HttpGet("weekly/detailed")]
+        public async Task<ActionResult<WeeklyBookingsReportDto>> GetDetailedWeeklyReport([FromQuery] string startDate, [FromQuery] string endDate)
+        {
+            var report = await _reportService.GenerateDetailedWeeklyReportAsync(startDate, endDate);
+            return Ok(report);
+        }
+
         [HttpGet("monthly")]
         public async Task<ActionResult<MonthlyReportDto>> GetMonthlyReport([FromQuery] int year, [FromQuery] int month)
         {

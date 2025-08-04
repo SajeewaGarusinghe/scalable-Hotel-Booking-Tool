@@ -11,11 +11,13 @@ namespace HotelBooking.AnalyticsService.Services
     {
         private readonly IBookingRepository _bookingRepository;
         private readonly IRoomRepository _roomRepository;
+        private readonly ISpecialRequestRepository _specialRequestRepository;
 
-        public ReportService(IBookingRepository bookingRepository, IRoomRepository roomRepository)
+        public ReportService(IBookingRepository bookingRepository, IRoomRepository roomRepository, ISpecialRequestRepository specialRequestRepository)
         {
             _bookingRepository = bookingRepository;
             _roomRepository = roomRepository;
+            _specialRequestRepository = specialRequestRepository;
         }
 
         public async Task<WeeklyReportDto> GenerateWeeklyReportAsync(string startDate, string endDate)
@@ -56,6 +58,104 @@ namespace HotelBooking.AnalyticsService.Services
                 OccupancyRate = occupancyRate,
                 TotalGuests = totalGuests,
                 RoomTypeStats = roomTypeStats
+            };
+        }
+
+        public async Task<WeeklyBookingsReportDto> GenerateDetailedWeeklyReportAsync(string startDate, string endDate)
+        {
+            var start = DateTime.Parse(startDate);
+            var end = DateTime.Parse(endDate);
+            var bookings = await _bookingRepository.GetBookingsByDateRangeAsync(start, end);
+            var allRooms = await _roomRepository.GetAllRoomsAsync();
+            var specialRequests = await _specialRequestRepository.GetSpecialRequestsByDateRangeAsync(start, end);
+
+            var totalRooms = allRooms.Count();
+            var totalBookings = bookings.Count();
+            var totalRevenue = bookings.Sum(b => b.TotalAmount);
+            var totalGuests = bookings.Sum(b => b.NumberOfGuests);
+
+            // Calculate occupancy rate
+            var daysInPeriod = (end - start).Days + 1;
+            var totalRoomNights = totalRooms * daysInPeriod;
+            var occupiedRoomNights = bookings.Sum(b => (b.CheckOutDate - b.CheckInDate).Days);
+            var occupancyRate = totalRoomNights > 0 ? (double)occupiedRoomNights / totalRoomNights : 0;
+
+            // Room type statistics
+            var roomTypeStats = bookings
+                .GroupBy(b => b.Room?.RoomType ?? "Unknown")
+                .Select(g => new RoomTypeStatDto
+                {
+                    RoomType = g.Key,
+                    BookingCount = g.Count(),
+                    Revenue = g.Sum(b => b.TotalAmount),
+                    OccupancyRate = CalculateRoomTypeOccupancy(g.Key, start, end, allRooms, bookings)
+                }).ToList();
+
+            // Daily details
+            var dailyDetails = new List<DailyBookingsDetailDto>();
+            for (var date = start; date <= end; date = date.AddDays(1))
+            {
+                var dayBookings = bookings.Where(b => 
+                    (b.CheckInDate.Date <= date.Date && b.CheckOutDate.Date > date.Date)).ToList();
+                
+                var daySpecialRequests = specialRequests.Where(sr => 
+                    sr.RequestDate.Date == date.Date).ToList();
+
+                var dayRevenue = dayBookings.Sum(b => 
+                    b.TotalAmount / (decimal)Math.Max(1, (b.CheckOutDate - b.CheckInDate).Days));
+                
+                var dayOccupancy = totalRooms > 0 ? (double)dayBookings.Count / totalRooms : 0;
+
+                var bookingSummaries = dayBookings.Select(b => new BookingSummaryDto
+                {
+                    BookingId = b.BookingId,
+                    BookingReference = b.BookingReference ?? b.BookingId.ToString(),
+                    CustomerName = $"{b.Customer?.FirstName} {b.Customer?.LastName}".Trim(),
+                    RoomNumber = b.Room?.RoomNumber ?? "N/A",
+                    RoomType = b.Room?.RoomType ?? "Unknown",
+                    CheckInDate = b.CheckInDate,
+                    CheckOutDate = b.CheckOutDate,
+                    NumberOfGuests = b.NumberOfGuests,
+                    TotalAmount = b.TotalAmount,
+                    Status = b.BookingStatus
+                }).ToList();
+
+                var specialRequestSummaries = daySpecialRequests.Select(sr => new SpecialRequestSummaryDto
+                {
+                    RequestId = sr.RequestId,
+                    BookingReference = sr.Booking?.BookingReference ?? sr.BookingId.ToString(),
+                    CustomerName = $"{sr.Booking?.Customer?.FirstName} {sr.Booking?.Customer?.LastName}".Trim(),
+                    RequestType = sr.RequestType,
+                    Description = sr.Description,
+                    Status = sr.Status,
+                    RequestDate = sr.RequestDate,
+                    FulfilledDate = sr.FulfilledDate
+                }).ToList();
+
+                dailyDetails.Add(new DailyBookingsDetailDto
+                {
+                    Date = date,
+                    DayOfWeek = date.DayOfWeek.ToString(),
+                    TotalBookings = dayBookings.Count,
+                    DayRevenue = dayRevenue,
+                    DayOccupancyRate = dayOccupancy,
+                    TotalGuests = dayBookings.Sum(b => b.NumberOfGuests),
+                    Bookings = bookingSummaries,
+                    SpecialRequests = specialRequestSummaries
+                });
+            }
+
+            return new WeeklyBookingsReportDto
+            {
+                WeekStartDate = start,
+                WeekEndDate = end,
+                TotalBookings = totalBookings,
+                TotalRevenue = totalRevenue,
+                OccupancyRate = occupancyRate,
+                TotalGuests = totalGuests,
+                DailyDetails = dailyDetails,
+                RoomTypeStats = roomTypeStats,
+                GeneratedAt = DateTime.UtcNow
             };
         }
 

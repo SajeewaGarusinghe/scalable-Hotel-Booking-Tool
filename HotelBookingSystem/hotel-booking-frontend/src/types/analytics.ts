@@ -97,9 +97,12 @@ export interface BookingSummary {
 export interface SpecialRequestSummary {
   requestId: string;
   bookingReference: string;
+  customerName: string;
   requestType: string;
+  description?: string;
   status: string;
   requestDate: string;
+  fulfilledDate?: string;
 }
 
 export interface PricePrediction {
@@ -155,4 +158,40 @@ export interface ChatbotResponse {
   response: string;
   data?: any;
   suggestions?: string[];
+}
+
+export interface WeeklyBookingsReport {
+  weekStartDate: string;
+  weekEndDate: string;
+  totalBookings: number;
+  totalRevenue: number;
+  occupancyRate: number;
+  totalGuests: number;
+  dailyDetails: DailyBookingsDetail[];
+  roomTypeStats: RoomTypeStats[];
+  generatedAt: string;
+}
+
+export interface DailyBookingsDetail {
+  date: string;
+  dayOfWeek: string;
+  totalBookings: number;
+  dayRevenue: number;
+  dayOccupancyRate: number;
+  totalGuests: number;
+  bookings: BookingSummary[];
+  specialRequests: SpecialRequestSummary[];
+}
+
+export interface BookingSummary {
+  bookingId: string;
+  bookingReference: string;
+  customerName: string;
+  roomNumber: string;
+  roomType: string;
+  checkInDate: string;
+  checkOutDate: string;
+  numberOfGuests: number;
+  totalAmount: number;
+  status: string;
 }

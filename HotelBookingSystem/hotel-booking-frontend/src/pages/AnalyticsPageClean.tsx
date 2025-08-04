@@ -22,6 +22,7 @@ import {
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import { AnalyticsService } from '../services/analyticsService';
+import WeeklyBookingsReportComponent from '../components/reports/WeeklyBookingsReport';
 
 const AnalyticsPageClean: React.FC = () => {
   const [reportDateRange, setReportDateRange] = useState({
@@ -327,6 +328,9 @@ const AnalyticsPageClean: React.FC = () => {
             </Stack>
           </CardContent>
         </Card>
+
+        {/* Weekly Bookings and Special Requests Report */}
+        <WeeklyBookingsReportComponent />
       </Stack>
     </Box>
   );

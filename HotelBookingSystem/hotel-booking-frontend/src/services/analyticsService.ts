@@ -8,7 +8,8 @@ import {
   AvailabilityForecast,
   DemandForecast,
   ChatbotQuery, 
-  ChatbotResponse 
+  ChatbotResponse,
+  WeeklyBookingsReport
 } from '../types/analytics';
 
 export class AnalyticsService {
@@ -43,6 +44,11 @@ export class AnalyticsService {
   static async getWeeklyReport(startDate: string, endDate: string): Promise<WeeklyReport> {
     const params = new URLSearchParams({ startDate, endDate });
     return apiClient.get<WeeklyReport>(`${this.REPORTS_BASE}/weekly?${params}`);
+  }
+
+  static async getDetailedWeeklyBookingsReport(startDate: string, endDate: string): Promise<WeeklyBookingsReport> {
+    const params = new URLSearchParams({ startDate, endDate });
+    return apiClient.get<WeeklyBookingsReport>(`${this.REPORTS_BASE}/weekly/detailed?${params}`);
   }
 
   static async getMonthlyReport(year: number, month: number): Promise<MonthlyReport> {

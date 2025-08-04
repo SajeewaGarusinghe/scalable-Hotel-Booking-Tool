@@ -15,6 +15,7 @@ builder.Services.AddDbContext<HotelBookingContext>(options =>
 // Repository registration
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+builder.Services.AddScoped<ISpecialRequestRepository, SpecialRequestRepository>();
 
 // Service registration
 builder.Services.AddScoped<ReportService>();
