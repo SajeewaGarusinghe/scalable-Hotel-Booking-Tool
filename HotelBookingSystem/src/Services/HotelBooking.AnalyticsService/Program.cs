@@ -20,8 +20,14 @@ builder.Services.AddScoped<ISpecialRequestRepository, SpecialRequestRepository>(
 // Service registration
 builder.Services.AddScoped<ReportService>();
 builder.Services.AddScoped<PredictionService>();
-builder.Services.AddScoped<ChatbotService>();
+builder.Services.AddScoped<EnhancedPredictionService>();
+builder.Services.AddScoped<IChatbotService, IntelligentChatbotService>();
+builder.Services.AddScoped<INLPService, NLPService>();
+builder.Services.AddScoped<IConversationContextService, ConversationContextService>();
 builder.Services.AddScoped<StatisticsService>();
+
+// Register the enhanced prediction service as the IPredictionService implementation
+builder.Services.AddScoped<IPredictionService>(provider => provider.GetService<EnhancedPredictionService>());
 
 // CORS
 builder.Services.AddCors(options =>

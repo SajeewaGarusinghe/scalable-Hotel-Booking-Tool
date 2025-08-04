@@ -70,7 +70,7 @@ You're scaling the monolithic hotel booking prototype from earlier coursework  t
 ### Task 2 - Architecture Implementation (60%)
 
 1. **Web Services Implementation**
-    - Implement REST and/or SOAP endpoints
+    - Implement REST  endpoints
     - Provide complete CRUD operations for:
         - Bookings
         - Rooms

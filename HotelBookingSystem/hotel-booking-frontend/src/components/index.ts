@@ -14,3 +14,7 @@ export { StatusIndicator } from './common/StatusIndicator';
 // Auth Components
 export { LoginPage } from './auth/LoginPage';
 export { ProtectedRoute } from './auth/ProtectedRoute';
+
+// Chatbot Components
+export { default as PredictiveChatbot } from './PredictiveChatbot';
+export { PredictiveChatbot as PredictiveChatbotComponent } from './PredictiveChatbot';

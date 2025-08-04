@@ -113,12 +113,44 @@ CREATE TABLE analytics.Reports (
     GeneratedBy NVARCHAR(100)
 );
 
--- Create Chatbot Interactions Table
+-- Enhanced Chatbot Interactions Table
 CREATE TABLE analytics.ChatbotInteractions (
     InteractionId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    SessionId UNIQUEIDENTIFIER,
     CustomerId UNIQUEIDENTIFIER,
-    Query NVARCHAR(500) NOT NULL,
+    Query NVARCHAR(1000) NOT NULL,
+    QueryIntent NVARCHAR(100), -- pricing, availability, trends, booking
+    ExtractedEntities NVARCHAR(MAX), -- JSON format
     Response NVARCHAR(MAX) NOT NULL,
-    QueryType NVARCHAR(50), -- Availability, Pricing, Booking
+    ResponseType NVARCHAR(50), -- prediction, information, suggestion
+    ConfidenceLevel DECIMAL(5,2),
+    ProcessingTimeMs INT,
+    UserFeedback INT, -- 1-5 rating
     Timestamp DATETIME2 DEFAULT GETUTCDATE()
+);
+
+-- Booking Patterns Analysis Table
+CREATE TABLE analytics.BookingPatterns (
+    PatternId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    RoomType NVARCHAR(50),
+    BookingDate DATE,
+    CheckInDate DATE,
+    DaysInAdvance INT,
+    SeasonalFactor DECIMAL(5,2),
+    WeekdayFactor DECIMAL(5,2),
+    EventFactor DECIMAL(5,2),
+    PricePaid DECIMAL(10,2),
+    OccupancyRate DECIMAL(5,2),
+    CreatedAt DATETIME2 DEFAULT GETUTCDATE()
+);
+
+-- External Factors Table (for enhanced predictions)
+CREATE TABLE analytics.ExternalFactors (
+    FactorId UNIQUEIDENTIFIER PRIMARY KEY DEFAULT NEWID(),
+    FactorDate DATE,
+    WeatherScore DECIMAL(3,1), -- 1-10 scale
+    LocalEvents INT, -- number of events
+    CompetitorPricing DECIMAL(10,2),
+    EconomicIndex DECIMAL(5,2),
+    CreatedAt DATETIME2 DEFAULT GETUTCDATE()
 );

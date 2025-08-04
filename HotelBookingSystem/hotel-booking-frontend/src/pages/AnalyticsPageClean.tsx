@@ -13,16 +13,24 @@ import {
   Select,
   MenuItem,
   CircularProgress,
+  Fab,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
 } from '@mui/material';
 import {
   Assessment as ReportIcon,
   TrendingUp as TrendingIcon,
   ShowChart as ChartIcon,
   Speed as SpeedIcon,
+  SmartToy as ChatbotIcon,
+  Close as CloseIcon,
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import { AnalyticsService } from '../services/analyticsService';
 import WeeklyBookingsReportComponent from '../components/reports/WeeklyBookingsReport';
+import PredictiveChatbot from '../components/PredictiveChatbot';
 
 const AnalyticsPageClean: React.FC = () => {
   const [reportDateRange, setReportDateRange] = useState({
@@ -35,6 +43,10 @@ const AnalyticsPageClean: React.FC = () => {
     checkInDate: new Date().toISOString().split('T')[0],
     numberOfNights: 1,
   });
+
+  // Chatbot state
+  const [showChatbot, setShowChatbot] = useState(false);
+  const [chatbotDialog, setChatbotDialog] = useState(false);
 
   // Fetch quick statistics
   const { 
@@ -331,7 +343,85 @@ const AnalyticsPageClean: React.FC = () => {
 
         {/* Weekly Bookings and Special Requests Report */}
         <WeeklyBookingsReportComponent />
+
+        {/* AI Assistant Card */}
+        <Card>
+          <CardContent>
+            <Box display="flex" alignItems="center" gap={1} mb={2}>
+              <ChatbotIcon color="primary" />
+              <Typography variant="h6">AI Hotel Assistant</Typography>
+            </Box>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              Get intelligent insights about room availability, pricing trends, and demand forecasts using our AI chatbot.
+            </Typography>
+            <Stack direction="row" spacing={2} mt={2}>
+              <Button
+                variant="contained"
+                startIcon={<ChatbotIcon />}
+                onClick={() => setShowChatbot(!showChatbot)}
+              >
+                {showChatbot ? 'Hide Assistant' : 'Open AI Assistant'}
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => setChatbotDialog(true)}
+              >
+                Open in Dialog
+              </Button>
+            </Stack>
+            
+            {showChatbot && (
+              <Box mt={3}>
+                <PredictiveChatbot />
+              </Box>
+            )}
+          </CardContent>
+        </Card>
       </Stack>
+
+      {/* Floating Action Button for Quick Access */}
+      <Fab
+        color="primary"
+        aria-label="ai-assistant"
+        sx={{
+          position: 'fixed',
+          bottom: 24,
+          right: 24,
+          zIndex: 1000,
+        }}
+        onClick={() => setChatbotDialog(true)}
+      >
+        <ChatbotIcon />
+      </Fab>
+
+      {/* Chatbot Dialog */}
+      <Dialog
+        open={chatbotDialog}
+        onClose={() => setChatbotDialog(false)}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: { height: '80vh' }
+        }}
+      >
+        <DialogTitle>
+          <Box display="flex" alignItems="center" justifyContent="space-between">
+            <Box display="flex" alignItems="center" gap={1}>
+              <ChatbotIcon color="primary" />
+              <Typography variant="h6">AI Hotel Assistant</Typography>
+            </Box>
+            <IconButton onClick={() => setChatbotDialog(false)}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+        <DialogContent sx={{ p: 0 }}>
+          <PredictiveChatbot 
+            expanded 
+            onClose={() => setChatbotDialog(false)} 
+          />
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };
