@@ -54,7 +54,8 @@ export interface RoomTypeQuickStats {
 
 export interface DashboardStats {
   currentStats: QuickStats;
-  revenueTrend: TrendData[];
+  revenueTrend?: TrendData[];
+  revenueTrind?: TrendData[]; // Handle typo in API response
   occupancyTrend: TrendData[];
   upcomingBookings: UpcomingBooking[];
   recentActivities: RecentActivity[];

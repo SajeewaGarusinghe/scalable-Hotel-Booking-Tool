@@ -11,6 +11,13 @@ import {
   Container,
   CircularProgress,
   Alert,
+  Divider,
+  Chip,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemAvatar,
+  Tooltip,
 } from '@mui/material';
 import {
   KingBed,
@@ -21,16 +28,35 @@ import {
   Notifications,
   Add,
   Refresh,
+  AssessmentOutlined,
+  DateRange,
+  Person,
+  AttachMoney,
+  HotelOutlined,
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useDashboard } from '../hooks';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as RechartsTooltip,
+  Legend,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+} from 'recharts';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const theme = useTheme();
   const navigate = useNavigate();
-  const { dashboardStats, quickStats, loading, error, refetch } = useDashboard();
+  const { dashboardStats, quickStats, revenueTrend, occupancyTrend, loading, error, refetch } = useDashboard();
 
   // Define dashboard stats with real data
   const stats = [
@@ -62,6 +88,15 @@ const Dashboard: React.FC = () => {
 
   // Use real recent activities or fallback to empty array
   const recentActivities = dashboardStats?.recentActivities || [];
+  
+  // Use real upcoming bookings or fallback to empty array
+  const upcomingBookings = dashboardStats?.upcomingBookings || [];
+
+  // Format date for display
+  const formatDate = (dateString: string): string => {
+    const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
   return (
     <Box sx={{ p: { xs: 2, md: 3 } }}>
@@ -172,9 +207,108 @@ const Dashboard: React.FC = () => {
           </Paper>
         ))}
       </Box>
+      
+      {/* Charts */}
+      {!loading && (
+        <Box sx={{ mb: 4, display: 'flex', flexDirection: { xs: 'column', lg: 'row' }, gap: 3 }}>
+          {/* Revenue Trend Chart */}
+          <Paper 
+            elevation={2}
+            sx={{ 
+              p: 3, 
+              borderRadius: 4,
+              flex: { xs: '1 1 100%', lg: '1 1 50%' },
+              height: { xs: 300, md: 350 }
+            }}
+          >
+            <Typography variant="h6" fontWeight="bold" gutterBottom>
+              Revenue Trend
+            </Typography>
+            <ResponsiveContainer width="100%" height="85%">
+              <AreaChart 
+                data={revenueTrend}
+                margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+              >
+                <defs>
+                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={theme.palette.primary.main} stopOpacity={0.8} />
+                    <stop offset="95%" stopColor={theme.palette.primary.main} stopOpacity={0.1} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                <XAxis 
+                  dataKey="label" 
+                  tick={{ fontSize: 12 }}
+                  tickLine={false}
+                />
+                <YAxis 
+                  tickFormatter={(value: number) => `$${value}`}
+                  tick={{ fontSize: 12 }}
+                  tickLine={false}
+                />
+                <RechartsTooltip 
+                  formatter={(value: any) => [`$${value.toLocaleString()}`, 'Revenue']}
+                  labelFormatter={(label: string) => `Date: ${label}`}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="value" 
+                  stroke={theme.palette.primary.main}
+                  fillOpacity={1}
+                  fill="url(#colorRevenue)"
+                  strokeWidth={2}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </Paper>
 
-      {/* Main Content Area */}
-      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4 }}>
+          {/* Occupancy Rate Chart */}
+          <Paper 
+            elevation={2}
+            sx={{ 
+              p: 3, 
+              borderRadius: 4,
+              flex: { xs: '1 1 100%', lg: '1 1 50%' },
+              height: { xs: 300, md: 350 }
+            }}
+          >
+            <Typography variant="h6" fontWeight="bold" gutterBottom>
+              Occupancy Rate
+            </Typography>
+            <ResponsiveContainer width="100%" height="85%">
+              <BarChart 
+                data={occupancyTrend.slice(-14)} // Show only last 14 days
+                margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+                <XAxis 
+                  dataKey="label" 
+                  tick={{ fontSize: 12 }}
+                  tickLine={false}
+                />
+                <YAxis 
+                  tickFormatter={(value: number) => `${value}%`}
+                  tick={{ fontSize: 12 }}
+                  domain={[0, 100]}
+                  tickLine={false}
+                />
+                <RechartsTooltip 
+                  formatter={(value: any) => [`${value.toFixed(1)}%`, 'Occupancy']}
+                  labelFormatter={(label: string) => `Date: ${label}`}
+                />
+                <Bar 
+                  dataKey="value" 
+                  fill={theme.palette.secondary.main}
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </Paper>
+        </Box>
+      )}
+
+      {/* Main Content Area - First Row */}
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4, mb: 4 }}>
         {/* Quick Actions */}
         <Paper 
           elevation={2} 
@@ -192,7 +326,7 @@ const Dashboard: React.FC = () => {
             <Button 
               variant="contained" 
               startIcon={<Add />} 
-              onClick={() => navigate('/bookings/new')}
+              onClick={() => window.open('http://localhost:3000/bookings', '_blank')}
               sx={{ justifyContent: 'flex-start', py: 1.5 }}
             >
               New Booking
@@ -212,6 +346,22 @@ const Dashboard: React.FC = () => {
               sx={{ justifyContent: 'flex-start', py: 1.5 }}
             >
               Manage Rooms
+            </Button>
+            <Button 
+              variant="outlined" 
+              startIcon={<TrendingUp />} 
+              onClick={() => navigate('/analytics')}
+              sx={{ justifyContent: 'flex-start', py: 1.5 }}
+            >
+              Analytics
+            </Button>
+            <Button 
+              variant="outlined" 
+              startIcon={<AssessmentOutlined />} 
+              onClick={() => navigate('/reports')}
+              sx={{ justifyContent: 'flex-start', py: 1.5 }}
+            >
+              Reports
             </Button>
           </Stack>
         </Paper>
@@ -282,6 +432,107 @@ const Dashboard: React.FC = () => {
           )}
         </Paper>
       </Box>
+      
+      {/* Main Content Area - Second Row with Upcoming Bookings */}
+      {!loading && upcomingBookings.length > 0 && (
+        <Paper 
+          elevation={2} 
+          sx={{ 
+            p: 3, 
+            borderRadius: 4,
+            mb: 4
+          }}
+        >
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="h6" fontWeight="bold">
+              Upcoming Bookings
+            </Typography>
+            <Button 
+              size="small" 
+              endIcon={<ArrowForward />}
+              onClick={() => navigate('/bookings')}
+            >
+              View All Bookings
+            </Button>
+          </Box>
+          
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, flexWrap: 'wrap', gap: 3 }}>
+            {upcomingBookings.map((booking, index) => (
+              <Paper
+                key={booking.bookingId}
+                elevation={1}
+                sx={{
+                  p: 2,
+                  borderRadius: 2,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  flex: { xs: '1 1 100%', md: '1 1 calc(50% - 1.5rem)', lg: '1 1 calc(33.333% - 2rem)' },
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 1.5
+                }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                  <Avatar sx={{ bgcolor: theme.palette.primary.main }}>
+                    <Person />
+                  </Avatar>
+                  <Box>
+                    <Typography variant="body1" fontWeight="medium">
+                      {booking.customerName}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Room {booking.roomNumber}
+                    </Typography>
+                  </Box>
+                </Box>
+                
+                <Divider />
+                
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <DateRange fontSize="small" color="action" />
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">
+                        Check-in
+                      </Typography>
+                      <Typography variant="body2">
+                        {formatDate(booking.checkInDate)}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <DateRange fontSize="small" color="action" />
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">
+                        Check-out
+                      </Typography>
+                      <Typography variant="body2">
+                        {formatDate(booking.checkOutDate)}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+                
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Chip 
+                    icon={<Person sx={{ fontSize: '1rem !important' }} />} 
+                    label={`${booking.numberOfGuests} Guest${booking.numberOfGuests > 1 ? 's' : ''}`}
+                    size="small"
+                    sx={{ borderRadius: 1 }}
+                  />
+                  
+                  {booking.totalAmount > 0 && (
+                    <Typography variant="body2" fontWeight="medium">
+                      ${booking.totalAmount.toLocaleString()}
+                    </Typography>
+                  )}
+                </Box>
+              </Paper>
+            ))}
+          </Box>
+        </Paper>
+      )}
     </Box>
   );
 };
