@@ -98,6 +98,6 @@
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "http://51.21.128.214:5000"
+    "BaseUrl": "http://172.214.136.108:5000"
   }
 }
