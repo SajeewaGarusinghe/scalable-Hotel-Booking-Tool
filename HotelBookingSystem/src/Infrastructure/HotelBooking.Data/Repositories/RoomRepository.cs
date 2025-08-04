@@ -62,5 +62,13 @@ namespace HotelBooking.Data.Repositories
                  (b.CheckInDate < checkOutDate && b.CheckOutDate >= checkOutDate) ||
                  (b.CheckInDate >= checkInDate && b.CheckOutDate <= checkOutDate)));
         }
+
+        public async Task<IEnumerable<Room>> GetAllRoomsAsync()
+        {
+            return await _dbSet
+                .Where(r => r.IsActive)
+                .OrderBy(r => r.RoomNumber)
+                .ToListAsync();
+        }
     }
 }
