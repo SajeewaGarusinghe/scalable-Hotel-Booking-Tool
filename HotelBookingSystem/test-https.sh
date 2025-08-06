@@ -5,6 +5,19 @@ echo ""
 
 IP="172.214.136.108"
 
+# Check which docker compose command is available
+if command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE="docker-compose"
+elif docker compose version &> /dev/null; then
+    DOCKER_COMPOSE="docker compose"
+else
+    echo "❌ Neither 'docker-compose' nor 'docker compose' found!"
+    exit 1
+fi
+
+echo "Using: $DOCKER_COMPOSE"
+echo ""
+
 echo "🧪 Testing HTTPS Configuration..."
 echo ""
 
@@ -87,7 +100,7 @@ fi
 # Test 7: Container Status
 echo ""
 echo "7. Container Status..."
-docker-compose -f docker-compose.external.yml ps
+$DOCKER_COMPOSE -f docker-compose.external.yml ps
 
 # Test 8: Port Accessibility
 echo ""

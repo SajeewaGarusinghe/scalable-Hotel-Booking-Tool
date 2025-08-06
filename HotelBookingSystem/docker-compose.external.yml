@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # API Gateway Service
   api-gateway:
@@ -16,8 +14,9 @@ services:
       - ServiceUrls__BookingService=http://booking-service:80
       - ServiceUrls__AnalyticsService=http://analytics-service:80
       - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
-    ports:
-      - "5000:80"
+    # Remove direct port mapping - nginx will handle this
+    expose:
+      - "80"
     depends_on:
       - booking-service
       - analytics-service
@@ -36,8 +35,9 @@ services:
       - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings__DefaultConnection=Server=hotel-booking-server.database.windows.net;Database=hotel-booking-db;User Id=dbadmin;Password=HotelBooking1234;TrustServerCertificate=true;Encrypt=true;
       - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
-    ports:
-      - "5003:80"
+    # Remove direct port mapping - nginx will handle this
+    expose:
+      - "80"
     networks:
       - hotel-booking-network
     restart: unless-stopped
@@ -53,8 +53,9 @@ services:
       - ASPNETCORE_URLS=http://+:80
       - ConnectionStrings__DefaultConnection=Server=hotel-booking-server.database.windows.net;Database=hotel-booking-db;User Id=dbadmin;Password=HotelBooking1234;TrustServerCertificate=true;Encrypt=true;
       - ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
-    ports:
-      - "5005:80"
+    # Remove direct port mapping - nginx will handle this
+    expose:
+      - "80"
     networks:
       - hotel-booking-network
     restart: unless-stopped
@@ -69,8 +70,9 @@ services:
     container_name: hotel-booking-frontend
     environment:
       - REACT_APP_API_URL=https://172.214.136.108
-    ports:
-      - "3000:80"
+    # Remove direct port mapping - nginx will handle this
+    expose:
+      - "80"
     depends_on:
       - api-gateway
     networks:
