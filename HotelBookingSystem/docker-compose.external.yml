@@ -65,27 +65,28 @@ services:
       context: ./hotel-booking-frontend
       dockerfile: Dockerfile
       args:
-        REACT_APP_API_URL: http://172.214.136.108:5000
+        REACT_APP_API_URL: https://172.214.136.108
     container_name: hotel-booking-frontend
     environment:
-      - REACT_APP_API_URL=http://172.214.136.108:5000
+      - REACT_APP_API_URL=https://172.214.136.108
     ports:
       - "3000:80"
-      - "80:80"
     depends_on:
       - api-gateway
     networks:
       - hotel-booking-network
     restart: unless-stopped
 
-  # Nginx Reverse Proxy for external access
+  # Nginx Reverse Proxy for external access with HTTPS
   nginx:
     image: nginx:alpine
     container_name: hotel-booking-nginx
     ports:
-      - "8080:80"
+      - "80:80"    # HTTP (redirects to HTTPS)
+      - "443:443"  # HTTPS
     volumes:
       - ./nginx-external.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
     depends_on:
       - frontend
       - api-gateway
