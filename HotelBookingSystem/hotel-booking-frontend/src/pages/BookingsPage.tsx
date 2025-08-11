@@ -228,11 +228,14 @@ const BookingsPage: React.FC = () => {
     return customer ? `${customer.firstName} ${customer.lastName}` : 'Unknown Customer';
   };
 
+  // (Hooks must appear before any early return) compute sorted & paginated data first
   if (bookingsLoading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
-        <Typography>Loading bookings...</Typography>
-      </Box>
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+          <Typography>Loading bookings...</Typography>
+        </Box>
+      </LocalizationProvider>
     );
   }
 
