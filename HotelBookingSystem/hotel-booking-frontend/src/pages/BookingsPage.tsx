@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -12,6 +12,8 @@ import {
   TableHead,
   TableRow,
   Paper,
+  TableSortLabel,
+  TablePagination,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -59,6 +61,14 @@ const BookingsPage: React.FC = () => {
     bookingReference: '',
   });
   const [error, setError] = useState<string>('');
+
+  // Sorting state
+  const [orderBy, setOrderBy] = useState<string>('checkInDate');
+  const [order, setOrder] = useState<'asc' | 'desc'>('asc');
+
+  // Pagination state
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const queryClient = useQueryClient();
 
@@ -226,6 +236,65 @@ const BookingsPage: React.FC = () => {
     );
   }
 
+  // Helper to get comparable values for sorting
+  const getSortableValue = (b: Booking, key: string): any => {
+    switch (key) {
+      case 'bookingReference':
+        return b.bookingReference || b.bookingId;
+      case 'customer':
+        return getCustomerInfo(b.customerId).toLowerCase();
+      case 'room':
+        return getRoomInfo(b.roomId).toLowerCase();
+      case 'checkInDate':
+        return new Date(b.checkInDate).getTime();
+      case 'checkOutDate':
+        return new Date(b.checkOutDate).getTime();
+      case 'numberOfGuests':
+        return b.numberOfGuests;
+      case 'totalAmount':
+        return b.totalAmount ?? -1; // put missing amounts at top/bottom depending on order
+      case 'bookingStatus':
+        return (b.bookingStatus || '').toLowerCase();
+      default:
+        return (b as any)[key] ?? '';
+    }
+  };
+
+  const sortedBookings = useMemo(() => {
+    const copy = [...bookings];
+    copy.sort((a, b) => {
+      const av = getSortableValue(a, orderBy);
+      const bv = getSortableValue(b, orderBy);
+      if (av < bv) return order === 'asc' ? -1 : 1;
+      if (av > bv) return order === 'asc' ? 1 : -1;
+      return 0;
+    });
+    return copy;
+  }, [bookings, order, orderBy]);
+
+  const paginatedBookings = useMemo(() => {
+    const start = page * rowsPerPage;
+    return sortedBookings.slice(start, start + rowsPerPage);
+  }, [sortedBookings, page, rowsPerPage]);
+
+  const handleRequestSort = (property: string) => {
+    if (orderBy === property) {
+      setOrder(order === 'asc' ? 'desc' : 'asc');
+    } else {
+      setOrderBy(property);
+      setOrder('asc');
+    }
+  };
+
+  const handleChangePage = (_: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Box>
@@ -254,19 +323,83 @@ const BookingsPage: React.FC = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Booking ID</TableCell>
-                    <TableCell>Customer</TableCell>
-                    <TableCell>Room</TableCell>
-                    <TableCell>Check-in</TableCell>
-                    <TableCell>Check-out</TableCell>
-                    <TableCell>Guests</TableCell>
-                    <TableCell>Total Amount</TableCell>
-                    <TableCell>Status</TableCell>
+                    <TableCell sortDirection={orderBy === 'bookingReference' ? order : false}>
+                      <TableSortLabel
+                        active={orderBy === 'bookingReference'}
+                        direction={orderBy === 'bookingReference' ? order : 'asc'}
+                        onClick={() => handleRequestSort('bookingReference')}
+                      >
+                        Booking ID
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell sortDirection={orderBy === 'customer' ? order : false}>
+                      <TableSortLabel
+                        active={orderBy === 'customer'}
+                        direction={orderBy === 'customer' ? order : 'asc'}
+                        onClick={() => handleRequestSort('customer')}
+                      >
+                        Customer
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell sortDirection={orderBy === 'room' ? order : false}>
+                      <TableSortLabel
+                        active={orderBy === 'room'}
+                        direction={orderBy === 'room' ? order : 'asc'}
+                        onClick={() => handleRequestSort('room')}
+                      >
+                        Room
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell sortDirection={orderBy === 'checkInDate' ? order : false}>
+                      <TableSortLabel
+                        active={orderBy === 'checkInDate'}
+                        direction={orderBy === 'checkInDate' ? order : 'asc'}
+                        onClick={() => handleRequestSort('checkInDate')}
+                      >
+                        Check-in
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell sortDirection={orderBy === 'checkOutDate' ? order : false}>
+                      <TableSortLabel
+                        active={orderBy === 'checkOutDate'}
+                        direction={orderBy === 'checkOutDate' ? order : 'asc'}
+                        onClick={() => handleRequestSort('checkOutDate')}
+                      >
+                        Check-out
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell sortDirection={orderBy === 'numberOfGuests' ? order : false}>
+                      <TableSortLabel
+                        active={orderBy === 'numberOfGuests'}
+                        direction={orderBy === 'numberOfGuests' ? order : 'asc'}
+                        onClick={() => handleRequestSort('numberOfGuests')}
+                      >
+                        Guests
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell sortDirection={orderBy === 'totalAmount' ? order : false}>
+                      <TableSortLabel
+                        active={orderBy === 'totalAmount'}
+                        direction={orderBy === 'totalAmount' ? order : 'asc'}
+                        onClick={() => handleRequestSort('totalAmount')}
+                      >
+                        Total Amount
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell sortDirection={orderBy === 'bookingStatus' ? order : false}>
+                      <TableSortLabel
+                        active={orderBy === 'bookingStatus'}
+                        direction={orderBy === 'bookingStatus' ? order : 'asc'}
+                        onClick={() => handleRequestSort('bookingStatus')}
+                      >
+                        Status
+                      </TableSortLabel>
+                    </TableCell>
                     <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {bookings.map((booking: Booking) => (
+                  {paginatedBookings.map((booking: Booking) => (
                     <TableRow key={booking.bookingId}>
                       <TableCell>{booking.bookingReference || booking.bookingId.slice(0, 8)}</TableCell>
                       <TableCell>{getCustomerInfo(booking.customerId)}</TableCell>
@@ -309,6 +442,15 @@ const BookingsPage: React.FC = () => {
                   )}
                 </TableBody>
               </Table>
+              <TablePagination
+                component="div"
+                count={bookings.length}
+                page={page}
+                onPageChange={handleChangePage}
+                rowsPerPage={rowsPerPage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                rowsPerPageOptions={[5, 10, 25, 50]}
+              />
             </TableContainer>
           </CardContent>
         </Card>
