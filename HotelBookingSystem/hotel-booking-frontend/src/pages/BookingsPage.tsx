@@ -228,17 +228,6 @@ const BookingsPage: React.FC = () => {
     return customer ? `${customer.firstName} ${customer.lastName}` : 'Unknown Customer';
   };
 
-  // (Hooks must appear before any early return) compute sorted & paginated data first
-  if (bookingsLoading) {
-    return (
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
-          <Typography>Loading bookings...</Typography>
-        </Box>
-      </LocalizationProvider>
-    );
-  }
-
   // Helper to get comparable values for sorting
   const getSortableValue = (b: Booking, key: string): any => {
     switch (key) {
@@ -279,6 +268,17 @@ const BookingsPage: React.FC = () => {
     const start = page * rowsPerPage;
     return sortedBookings.slice(start, start + rowsPerPage);
   }, [sortedBookings, page, rowsPerPage]);
+
+  // Loading state AFTER hooks so hooks order is consistent
+  if (bookingsLoading) {
+    return (
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+          <Typography>Loading bookings...</Typography>
+        </Box>
+      </LocalizationProvider>
+    );
+  }
 
   const handleRequestSort = (property: string) => {
     if (orderBy === property) {
