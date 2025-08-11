@@ -325,8 +325,9 @@ const Dashboard: React.FC = () => {
           <Stack spacing={2} sx={{ mt: 2 }}>
             <Button 
               variant="contained" 
-              startIcon={<Add />} 
-              onClick={() => window.open('http://localhost:3000/bookings', '_blank')}
+              startIcon={<Add />}
+              // Use internal navigation instead of hard coded localhost URL to work in any deployed environment
+              onClick={() => navigate('/bookings')}
               sx={{ justifyContent: 'flex-start', py: 1.5 }}
             >
               New Booking
