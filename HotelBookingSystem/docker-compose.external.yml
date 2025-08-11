@@ -86,7 +86,6 @@ services:
     ports:
       - "80:80"     # HTTP (redirects to HTTPS)
       - "443:443"   # HTTPS
-      - "5000:5000" # Direct API access (HTTPS)
     volumes:
       - ./nginx-external.conf:/etc/nginx/nginx.conf
       - ./ssl:/etc/nginx/ssl

@@ -29,16 +29,8 @@ else
     echo "   ✗ Frontend HTTPS test failed"
 fi
 
-# Test 2: API Gateway Direct HTTPS
-echo "2. Testing API Gateway Direct HTTPS (Port 5000)..."
-if curl -k -s -o /dev/null -w "%{http_code}" https://$IP:5000/health | grep -q "200"; then
-    echo "   ✓ API Gateway HTTPS is responding"
-else
-    echo "   ✗ API Gateway HTTPS test failed"
-fi
-
-# Test 3: API via Frontend
-echo "3. Testing API via Frontend (Port 443/api)..."
+# Test 2: API via Frontend (Port 443/api)
+echo "2. Testing API via Frontend (Port 443/api)..."
 if curl -k -s -o /dev/null -w "%{http_code}" https://$IP/api/health | grep -q "200"; then
     echo "   ✓ API via Frontend is responding"
 else
@@ -56,13 +48,7 @@ else
     echo "   ✗ Frontend HTTP redirect failed (got $FRONTEND_REDIRECT)"
 fi
 
-# Test API gateway redirect
-API_REDIRECT=$(curl -s -o /dev/null -w "%{http_code}" http://$IP:5000)
-if [[ "$API_REDIRECT" == "301" ]]; then
-    echo "   ✓ API Gateway HTTP to HTTPS redirect working"
-else
-    echo "   ✗ API Gateway HTTP redirect failed (got $API_REDIRECT)"
-fi
+echo "(Direct API port 5000 removed; all access goes through 443)"
 
 # Test 5: SSL Certificate Information
 echo ""
@@ -71,8 +57,7 @@ echo "   Certificate details for $IP:443:"
 echo | openssl s_client -servername $IP -connect $IP:443 2>/dev/null | openssl x509 -noout -issuer -subject -dates 2>/dev/null
 
 echo ""
-echo "   Certificate details for $IP:5000:"
-echo | openssl s_client -servername $IP -connect $IP:5000 2>/dev/null | openssl x509 -noout -issuer -subject -dates 2>/dev/null
+echo "(No separate 5000 listener now)"
 
 # Test 6: Security Headers
 echo ""
@@ -105,7 +90,7 @@ $DOCKER_COMPOSE -f docker-compose.external.yml ps
 # Test 8: Port Accessibility
 echo ""
 echo "8. Testing Port Accessibility..."
-for port in 80 443 5000; do
+for port in 80 443; do
     if nc -z $IP $port 2>/dev/null; then
         echo "   ✓ Port $port is accessible"
     else
@@ -128,7 +113,6 @@ echo "If all tests show ✓, your HTTPS setup is working correctly!"
 echo ""
 echo "🔗 Access URLs:"
 echo "   Frontend: https://$IP"
-echo "   API Gateway: https://$IP:5000"
 echo "   API via Frontend: https://$IP/api"
 echo ""
 echo "⚠️  Note: Self-signed certificates will show browser warnings."
