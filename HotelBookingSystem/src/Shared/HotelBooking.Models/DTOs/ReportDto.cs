@@ -103,4 +103,55 @@ namespace HotelBooking.Models.DTOs
         public List<string> Labels { get; set; } = new();
         public List<decimal> Values { get; set; } = new();
     }
+
+    public class WeeklyBookingsReportDto
+    {
+        public DateTime WeekStartDate { get; set; }
+        public DateTime WeekEndDate { get; set; }
+        public int TotalBookings { get; set; }
+        public decimal TotalRevenue { get; set; }
+        public double OccupancyRate { get; set; }
+        public int TotalGuests { get; set; }
+        public List<DailyBookingsDetailDto> DailyDetails { get; set; } = new();
+        public List<RoomTypeStatDto> RoomTypeStats { get; set; } = new();
+        public DateTime GeneratedAt { get; set; }
+    }
+
+    public class DailyBookingsDetailDto
+    {
+        public DateTime Date { get; set; }
+        public string DayOfWeek { get; set; } = string.Empty;
+        public int TotalBookings { get; set; }
+        public decimal DayRevenue { get; set; }
+        public double DayOccupancyRate { get; set; }
+        public int TotalGuests { get; set; }
+        public List<BookingSummaryDto> Bookings { get; set; } = new();
+        public List<SpecialRequestSummaryDto> SpecialRequests { get; set; } = new();
+    }
+
+    public class BookingSummaryDto
+    {
+        public Guid BookingId { get; set; }
+        public string BookingReference { get; set; } = string.Empty;
+        public string CustomerName { get; set; } = string.Empty;
+        public string RoomNumber { get; set; } = string.Empty;
+        public string RoomType { get; set; } = string.Empty;
+        public DateTime CheckInDate { get; set; }
+        public DateTime CheckOutDate { get; set; }
+        public int NumberOfGuests { get; set; }
+        public decimal TotalAmount { get; set; }
+        public string Status { get; set; } = string.Empty;
+    }
+
+    public class SpecialRequestSummaryDto
+    {
+        public Guid RequestId { get; set; }
+        public string BookingReference { get; set; } = string.Empty;
+        public string CustomerName { get; set; } = string.Empty;
+        public string RequestType { get; set; } = string.Empty;
+        public string? Description { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public DateTime RequestDate { get; set; }
+        public DateTime? FulfilledDate { get; set; }
+    }
 }

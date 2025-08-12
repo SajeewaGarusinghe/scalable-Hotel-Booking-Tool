@@ -104,5 +104,26 @@ namespace HotelBooking.Data.Repositories
 
             return reference;
         }
+
+        public async Task<IEnumerable<Booking>> GetCurrentBookingsAsync()
+        {
+            var today = DateTime.Today;
+            return await _dbSet
+                .Where(b => b.CheckInDate <= today && b.CheckOutDate > today && b.BookingStatus == "Confirmed")
+                .Include(b => b.Customer)
+                .Include(b => b.Room)
+                .Include(b => b.SpecialRequests)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Booking>> GetBookingsForDateAsync(DateTime date)
+        {
+            return await _dbSet
+                .Where(b => b.CheckInDate <= date && b.CheckOutDate > date && b.BookingStatus == "Confirmed")
+                .Include(b => b.Customer)
+                .Include(b => b.Room)
+                .Include(b => b.SpecialRequests)
+                .ToListAsync();
+        }
     }
 }

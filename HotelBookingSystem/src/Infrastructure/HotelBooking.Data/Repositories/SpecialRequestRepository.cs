@@ -36,6 +36,17 @@ namespace HotelBooking.Data.Repositories
             return await GetByStatusAsync("Pending");
         }
 
+        public async Task<IEnumerable<SpecialRequest>> GetSpecialRequestsByDateRangeAsync(DateTime startDate, DateTime endDate)
+        {
+            return await _dbSet
+                .Where(sr => sr.RequestDate.Date >= startDate.Date && sr.RequestDate.Date <= endDate.Date)
+                .Include(sr => sr.Booking)
+                .ThenInclude(b => b.Customer)
+                .Include(sr => sr.Booking)
+                .ThenInclude(b => b.Room)
+                .ToListAsync();
+        }
+
         public async Task<bool> UpdateStatusAsync(Guid requestId, string status, DateTime? fulfilledDate = null)
         {
             var request = await GetByIdAsync(requestId);

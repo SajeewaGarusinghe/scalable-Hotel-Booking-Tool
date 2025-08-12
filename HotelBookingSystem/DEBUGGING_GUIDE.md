@@ -48,10 +48,10 @@ chmod +x start-external.sh
 ## External Access Setup
 
 ### Current Configuration:
-- **Frontend**: http://51.21.128.214:3000 and http://51.21.128.214:80
-- **API Gateway**: http://51.21.128.214:5000
-- **Booking Service**: http://51.21.128.214:5003
-- **Analytics Service**: http://51.21.128.214:5005
+- **Frontend**: http://172.214.136.108:3000 and http://172.214.136.108:80
+- **API Gateway**: http://172.214.136.108:5000
+- **Booking Service**: http://172.214.136.108:5003
+- **Analytics Service**: http://172.214.136.108:5005
 
 ### Firewall Requirements:
 Make sure your AWS Security Group allows inbound traffic on:
@@ -64,10 +64,10 @@ Make sure your AWS Security Group allows inbound traffic on:
 ### Test External Access:
 ```bash
 # From your local machine, test:
-curl http://51.21.128.214:3000
-curl http://51.21.128.214:5000/health
-curl http://51.21.128.214:5003/health
-curl http://51.21.128.214:5005/health
+curl http://172.214.136.108:3000
+curl http://172.214.136.108:5000/health
+curl http://172.214.136.108:5003/health
+curl http://172.214.136.108:5005/health
 ```
 
 ## Database Connection Troubleshooting
@@ -76,7 +76,7 @@ curl http://51.21.128.214:5005/health
 Ensure Azure SQL Database firewall allows connections from your EC2 instance:
 1. Go to Azure Portal → SQL Databases → HotelBookingSystem
 2. Go to "Set server firewall"
-3. Add your EC2 instance's public IP (51.21.128.214)
+3. Add your EC2 instance's public IP (172.214.136.108)
 4. Or temporarily set "Allow Azure services" to ON
 
 ### 2. Test Connection String
@@ -147,7 +147,7 @@ docker-compose up analytics-service
 
 1. **Run the updated start script**: `./start-external.sh start`
 2. **Check logs**: `docker-compose logs -f`
-3. **Test external access**: Open http://51.21.128.214:3000 in browser
-4. **Verify API**: Open http://51.21.128.214:5000/swagger
+3. **Test external access**: Open http://172.214.136.108:3000 in browser
+4. **Verify API**: Open http://172.214.136.108:5000/swagger
 
 If services are still failing, the issue is likely in the application code itself (missing health endpoints, database connection code, etc.).

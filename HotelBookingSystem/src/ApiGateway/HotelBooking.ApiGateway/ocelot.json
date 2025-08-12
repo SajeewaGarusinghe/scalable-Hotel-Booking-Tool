@@ -49,6 +49,18 @@
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     },
     {
+      "DownstreamPathTemplate": "/api/statistics/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "analytics-service",
+          "Port": 80
+        }
+      ],
+      "UpstreamPathTemplate": "/api/statistics/{everything}",
+      "UpstreamHttpMethod": [ "GET" ]
+    },
+    {
       "DownstreamPathTemplate": "/api/reports/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -86,6 +98,6 @@
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "http://51.21.128.214:5000"
+    "BaseUrl": "http://172.214.136.108:5000"
   }
 }

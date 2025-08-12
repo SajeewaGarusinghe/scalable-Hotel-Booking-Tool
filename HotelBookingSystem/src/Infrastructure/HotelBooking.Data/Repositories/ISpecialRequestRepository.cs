@@ -10,6 +10,7 @@ namespace HotelBooking.Data.Repositories
         Task<IEnumerable<SpecialRequest>> GetByBookingIdAsync(Guid bookingId);
         Task<IEnumerable<SpecialRequest>> GetByStatusAsync(string status);
         Task<IEnumerable<SpecialRequest>> GetPendingRequestsAsync();
+        Task<IEnumerable<SpecialRequest>> GetSpecialRequestsByDateRangeAsync(DateTime startDate, DateTime endDate);
         Task<bool> UpdateStatusAsync(Guid requestId, string status, DateTime? fulfilledDate = null);
     }
 }

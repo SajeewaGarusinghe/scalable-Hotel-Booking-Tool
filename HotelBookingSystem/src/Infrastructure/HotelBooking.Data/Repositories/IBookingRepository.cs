@@ -15,5 +15,7 @@ namespace HotelBooking.Data.Repositories
         Task<Booking?> GetBookingWithDetailsAsync(Guid bookingId);
         Task<IEnumerable<Booking>> GetConflictingBookingsAsync(Guid roomId, DateTime checkInDate, DateTime checkOutDate, Guid? excludeBookingId = null);
         Task<string> GenerateBookingReferenceAsync();
+        Task<IEnumerable<Booking>> GetCurrentBookingsAsync();
+        Task<IEnumerable<Booking>> GetBookingsForDateAsync(DateTime date);
     }
 }
